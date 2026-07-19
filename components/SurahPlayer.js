@@ -93,10 +93,6 @@ export default function SurahPlayer() {
           );
         })}
       </ul>
-
-      <p className="text-xs text-ink-700/45 mt-4 text-center">
-        Add your recitations as MP3s in <code className="font-mono">public/surahs/</code>.
-      </p>
     </section>
   );
 }

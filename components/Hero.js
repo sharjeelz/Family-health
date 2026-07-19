@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useWeather, describeWeather } from "../lib/useWeather";
+import { quoteOfDay } from "../lib/quotes";
 import WeatherIcon from "./WeatherIcon";
 
 // The kitchen belongs to Mom :) — greet her by name.
@@ -40,6 +41,19 @@ export default function Hero() {
     day: "numeric",
   });
 
+  // Hijri date via the Umm al-Qura Islamic calendar (matches the prayer-time method).
+  let hijriLabel = null;
+  try {
+    hijriLabel = new Intl.DateTimeFormat("en-GB-u-ca-islamic-umalqura", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(now);
+  } catch {
+    hijriLabel = null;
+  }
+
+  const quote = quoteOfDay(now);
   const wx = weather.status === "ready" ? describeWeather(weather.code) : null;
 
   return (
@@ -56,7 +70,16 @@ export default function Hero() {
           <p className="font-display text-3xl sm:text-4xl font-600 leading-tight">
             {greeting(h)}, {HOST_NAME}
           </p>
-          <p className="text-sand-200/80 font-600 text-sm mt-1">{dateLabel}</p>
+          {quote && (
+            <p dir="rtl" lang="ur" className="font-urdu text-sage-400 text-xs sm:text-sm leading-relaxed whitespace-pre-line mt-1.5">
+              {quote.text}
+              {quote.author ? `\n— ${quote.author}` : ""}
+            </p>
+          )}
+          <p className="text-sand-200/80 font-600 text-sm mt-2">{dateLabel}</p>
+          {hijriLabel && (
+            <p className="text-sage-400 font-700 text-xs mt-0.5">{hijriLabel}</p>
+          )}
           <div className="flex items-baseline gap-1.5 mt-3">
             <span className="font-display text-5xl sm:text-6xl font-700 tabular-nums tracking-tight">
               {hour12}:{mins}
