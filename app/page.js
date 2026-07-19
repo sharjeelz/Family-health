@@ -10,6 +10,7 @@ import StudyTab from "../components/StudyTab";
 import ChoresTab from "../components/ChoresTab";
 import GroceryTab from "../components/GroceryTab";
 import AzaanManager from "../components/AzaanManager";
+import KeepAwake from "../components/KeepAwake";
 import GuidesFab from "../components/GuidesFab";
 import WaterReminder from "../components/WaterReminder";
 import ReminderWatcher from "../components/ReminderWatcher";
@@ -41,6 +42,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen paper-bg pb-28">
+      <KeepAwake />
       <AzaanManager />
       <Hero />
 

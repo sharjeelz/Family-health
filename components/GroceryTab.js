@@ -4,20 +4,26 @@ import { useState, useEffect } from "react";
 
 const KEY = "family-grocery-v1";
 
-// Common staples drawn from the weekly meal plan (lib/plan.js) for one-tap adds.
+// Common household staples for one-tap adds (plain names — add the rest manually).
 const STAPLES = [
-  "Atta (whole-wheat flour)",
-  "Rice (brown/basmati)",
-  "Eggs",
-  "Chicken",
-  "Daal / lentils",
-  "Seasonal fruit",
-  "Vegetables (sabzi)",
-  "Salad (tomato, cucumber, onion)",
+  "Atta",
+  "Rice",
+  "Sugar",
+  "Tea",
+  "Cooking oil",
+  "Ghee",
   "Milk",
-  "Dry fruits (almonds, walnuts)",
-  "Chai & low sugar",
-  "Besan (gram flour)",
+  "Eggs",
+  "Bread",
+  "Yogurt",
+  "Chicken",
+  "Daal",
+  "Onions",
+  "Potatoes",
+  "Tomatoes",
+  "Salt",
+  "Fruit",
+  "Vegetables",
 ];
 
 function load() {
