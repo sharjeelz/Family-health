@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Nunito", system-ui, sans-serif;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: #FBF8F3;
+  color: #2C2419;
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Subtle warm paper texture via layered gradients */
+.paper-bg {
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(197, 107, 60, 0.05), transparent 40%),
+    radial-gradient(circle at 85% 100%, rgba(90, 132, 101, 0.06), transparent 45%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pop-in {
+    animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .check-bounce {
+    animation: checkBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes checkBounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+}
+
+/* Keyboard focus visibility */
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #C56B3C;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Weather icon animations */
+@media (prefers-reduced-motion: no-preference) {
+  .wx-spin { animation: wxSpin 18s linear infinite; }
+  @keyframes wxSpin { to { transform: rotate(360deg); } }
+
+  .wx-pulse { animation: wxPulse 3s ease-in-out infinite; transform-origin: center; }
+  @keyframes wxPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.75; } }
+
+  .wx-float { animation: wxFloat 4s ease-in-out infinite; }
+  @keyframes wxFloat { 0%,100% { transform: translateX(0); } 50% { transform: translateX(2px); } }
+
+  .wx-rain { animation: wxRain 1.2s ease-in infinite; }
+  @keyframes wxRain {
+    0% { opacity: 0; transform: translateY(-4px); }
+    30% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(8px); }
+  }
+
+  .wx-flash { animation: wxFlash 2.5s ease-in-out infinite; }
+  @keyframes wxFlash { 0%,45%,55%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+  .wx-fog { animation: wxFog 3s ease-in-out infinite; }
+  @keyframes wxFog { 0%,100% { opacity: 0.4; } 50% { opacity: 0.9; } }
+}
