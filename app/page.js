@@ -7,6 +7,7 @@ import HealthTab from "../components/HealthTab";
 import NamazTab from "../components/NamazTab";
 import RemindersTab from "../components/RemindersTab";
 import StudyTab from "../components/StudyTab";
+import ChoresTab from "../components/ChoresTab";
 import GroceryTab from "../components/GroceryTab";
 import AzaanManager from "../components/AzaanManager";
 import GuidesFab from "../components/GuidesFab";
@@ -20,6 +21,7 @@ const TABS = [
   { id: "health", label: "Health", icon: "🥗" },
   { id: "deen", label: "Deen", icon: "🕌" },
   { id: "study", label: "Study", icon: "📚" },
+  { id: "chores", label: "Chores", icon: "⭐" },
   { id: "grocery", label: "Grocery", icon: "🛒" },
   { id: "reminders", label: "Reminders", icon: "📝" },
 ];
@@ -49,6 +51,7 @@ export default function Home() {
             {tab === "health" && today && <HealthTab today={today} />}
             {tab === "deen" && <NamazTab />}
             {tab === "study" && <StudyTab />}
+            {tab === "chores" && <ChoresTab />}
             {tab === "grocery" && <GroceryTab />}
             {tab === "reminders" && <RemindersTab />}
           </div>
@@ -75,12 +78,13 @@ export default function Home() {
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 aria-current={active ? "page" : undefined}
-                className="flex-1 flex flex-col items-center gap-0.5 py-3 transition-colors"
+                className="flex-1 flex flex-col items-center gap-0.5 py-2.5 sm:py-3 transition-colors"
+                title={t.label}
               >
-                <span className={`text-xl transition-transform ${active ? "scale-110" : "opacity-50"}`} aria-hidden="true">
+                <span className={`text-lg sm:text-xl transition-transform ${active ? "scale-110" : "opacity-50"}`} aria-hidden="true">
                   {t.icon}
                 </span>
-                <span className={`text-xs font-800 ${active ? "text-clay-600" : "text-ink-700/45"}`}>
+                <span className={`hidden sm:block text-xs font-800 ${active ? "text-clay-600" : "text-ink-700/45"}`}>
                   {t.label}
                 </span>
                 <span className={`h-0.5 w-6 rounded-full mt-0.5 ${active ? "bg-clay-500" : "bg-transparent"}`} />
