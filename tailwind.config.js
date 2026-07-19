@@ -34,6 +34,8 @@ module.exports = {
       fontFamily: {
         display: ["var(--font-display)", "Georgia", "serif"],
         body: ["var(--font-body)", "system-ui", "sans-serif"],
+        arabic: ["var(--font-arabic)", "Georgia", "serif"],
+        urdu: ["var(--font-urdu)", "var(--font-arabic)", "serif"],
       },
       boxShadow: {
         soft: "0 2px 12px rgba(60, 52, 40, 0.06)",

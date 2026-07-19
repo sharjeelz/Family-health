@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { STUDY, CHILDREN } from "../lib/plan";
+import Avatar from "./Avatar";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -64,7 +65,7 @@ export default function StudyTab() {
               return (
                 <div key={child.id}>
                   <p className="flex items-center gap-2 font-800 text-sm text-ink-800 mb-2">
-                    <span aria-hidden="true">{child.emoji}</span>
+                    <Avatar photo={child.photo} pos={child.pos} emoji={child.emoji} size={34} alt={child.name} />
                     {child.name}
                     {child.school && (
                       <span className="font-600 text-ink-700/45">· {child.school}</span>

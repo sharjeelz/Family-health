@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Fraunces, Nunito } from "next/font/google";
+import { Fraunces, Nunito, Noto_Naskh_Arabic, Noto_Nastaliq_Urdu } from "next/font/google";
 import RegisterSW from "../components/RegisterSW";
 
 // Self-hosted via next/font: fonts are downloaded at build time and served
@@ -15,6 +15,19 @@ const nunito = Nunito({
   subsets: ["latin"],
   weight: ["400", "600", "700", "800"],
   variable: "--font-body",
+  display: "swap",
+});
+// Arabic (Naskh) for Quran verses, Urdu (Nastaliq) for the Urdu translation.
+const naskh = Noto_Naskh_Arabic({
+  subsets: ["arabic"],
+  weight: ["400", "700"],
+  variable: "--font-arabic",
+  display: "swap",
+});
+const nastaliq = Noto_Nastaliq_Urdu({
+  subsets: ["arabic"],
+  weight: ["400"],
+  variable: "--font-urdu",
   display: "swap",
 });
 
@@ -42,7 +55,10 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${nunito.variable}`}>
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${nunito.variable} ${naskh.variable} ${nastaliq.variable}`}
+    >
       <body>
         <RegisterSW />
         {children}

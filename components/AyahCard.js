@@ -32,14 +32,20 @@ export default function AyahCard() {
             <p
               dir="rtl"
               lang="ar"
-              className="font-display leading-[1.9] text-2xl sm:text-3xl text-sand-50"
+              className="font-arabic leading-[2] text-2xl sm:text-3xl text-sand-50"
             >
               {ayah.arabic}
             </p>
-            <p className="text-sand-100/90 font-600 text-base mt-4 leading-relaxed">
-              “{ayah.translation}”
+            <p
+              dir="rtl"
+              lang="ur"
+              className="font-urdu text-sand-100/90 text-lg sm:text-xl mt-5 leading-[2.4]"
+            >
+              {ayah.urdu}
             </p>
-            <p className="text-sage-400 font-800 text-sm mt-3">— {ayah.ref}</p>
+            <p dir="rtl" lang="ur" className="font-urdu text-sage-400 font-500 text-sm mt-3">
+              {ayah.ref}
+            </p>
           </>
         )}
       </div>

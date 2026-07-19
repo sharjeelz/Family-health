@@ -9,6 +9,8 @@ import RemindersTab from "../components/RemindersTab";
 import StudyTab from "../components/StudyTab";
 import GroceryTab from "../components/GroceryTab";
 import AzaanManager from "../components/AzaanManager";
+import GuidesFab from "../components/GuidesFab";
+import { LanguageProvider } from "../lib/i18n";
 
 const TABS = [
   { id: "home", label: "Home", icon: "🏠" },
@@ -32,20 +34,23 @@ export default function Home() {
       <AzaanManager />
       <Hero />
 
-      <div className="max-w-2xl mx-auto px-4 mt-5">
-        {tab === "home" && <HomeTab />}
-        {tab === "health" && today && <HealthTab today={today} />}
-        {tab === "namaz" && <NamazTab />}
-        {tab === "study" && <StudyTab />}
-        {tab === "grocery" && <GroceryTab />}
-        {tab === "reminders" && <RemindersTab />}
-      </div>
+      <LanguageProvider>
+        <div className="max-w-2xl mx-auto px-4 mt-5">
+          {tab === "home" && <HomeTab />}
+          {tab === "health" && today && <HealthTab today={today} />}
+          {tab === "namaz" && <NamazTab />}
+          {tab === "study" && <StudyTab />}
+          {tab === "grocery" && <GroceryTab />}
+          {tab === "reminders" && <RemindersTab />}
+        </div>
+        <GuidesFab />
+      </LanguageProvider>
 
       <footer className="max-w-2xl mx-auto px-4 mt-8 text-center">
-        <p className="text-xs text-ink-700/40 font-600 leading-relaxed">
+        {/* <p className="text-xs text-ink-700/40 font-600 leading-relaxed">
           General guidance, not medical advice. Prayer times use the Umm al-Qura method —
           confirm locally. Your data is saved on this device.
-        </p>
+        </p> */}
       </footer>
 
       {/* Bottom tab bar — fridge/tablet friendly */}

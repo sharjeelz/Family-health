@@ -41,6 +41,13 @@ body {
     50% { transform: scale(1.15); }
     100% { transform: scale(1); }
   }
+
+  /* Gentle nudge when it's time for a glass of water */
+  .water-nudge { animation: waterNudge 1.5s ease-in-out 3; }
+  @keyframes waterNudge {
+    0%, 100% { box-shadow: 0 4px 20px rgba(60, 52, 40, 0.08); }
+    50% { box-shadow: 0 0 0 4px rgba(74, 144, 194, 0.35), 0 6px 26px rgba(74, 144, 194, 0.25); }
+  }
 }
 
 /* Keyboard focus visibility */

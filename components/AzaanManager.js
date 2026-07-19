@@ -194,7 +194,7 @@ export default function AzaanManager() {
           <p
             dir="rtl"
             lang="ar"
-            className="font-display text-2xl text-sand-100/90 mt-4 leading-relaxed"
+            className="font-arabic text-2xl text-sand-100/90 mt-4 leading-loose"
           >
             {ARABIC_CALL[active.name] || "حَيَّ عَلَى الصَّلَاة"}
           </p>
