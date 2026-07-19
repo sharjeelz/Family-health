@@ -11,6 +11,7 @@ import GroceryTab from "../components/GroceryTab";
 import AzaanManager from "../components/AzaanManager";
 import GuidesFab from "../components/GuidesFab";
 import WaterReminder from "../components/WaterReminder";
+import ReminderWatcher from "../components/ReminderWatcher";
 import { QuranPlayerProvider } from "../components/QuranPlayer";
 import { LanguageProvider } from "../lib/i18n";
 
@@ -31,6 +32,11 @@ export default function Home() {
     setToday(new Date());
   }, []);
 
+  // Start each tab from the top instead of keeping the previous tab's scroll.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [tab]);
+
   return (
     <main className="min-h-screen paper-bg pb-28">
       <AzaanManager />
@@ -48,6 +54,7 @@ export default function Home() {
           </div>
           <GuidesFab />
           <WaterReminder />
+          <ReminderWatcher />
         </QuranPlayerProvider>
       </LanguageProvider>
 
