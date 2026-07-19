@@ -4,10 +4,18 @@ A fridge-mounted family command center for a tablet. Live hero (greeting, clock,
 
 ## Tabs
 
+- **Home** — the ambient landing screen: a rotating family photo and the **ayah of the day** (a curated, meaningful verse chosen by the calendar day — not random).
 - **Health** — daily meal plan (Pakistani home food), roti & rice guide, habit tracking, per-person water, weekly progress.
-- **Namaz** — 5 live prayer times (Umm al-Qura method) with a next-prayer countdown, by your location.
+- **Namaz** — 5 live prayer times (Umm al-Qura method) with a next-prayer countdown, by your location. Includes an **Azaan alert** (with Test button + on/off toggle).
 - **Study** — placeholder that already switches by day; shows which books each child needs for *tomorrow*. Ready for your data (see below).
+- **Grocery** — add / check off / delete shopping items, plus one-tap "staples" pulled from the meal plan. Saved on the device.
 - **Reminders** — add / check off / delete family reminders. Saved on the device.
+
+## Azaan alert & family photos (optional assets)
+
+- **Azaan audio:** drop an `adhan.mp3` into `public/`. At each prayer time the app plays it and shows a full-screen reminder with a mosque image. **No file?** It plays a gentle chime instead — still works. Toggle it on/off or preview it with **Test** on the Namaz tab.
+- **Family photos:** put pictures in `public/family/` and list them in `lib/gallery.js`. They rotate on the Home tab.
+- **Ayah of the day:** the curated verse list lives in `lib/ayat.js` — add or edit verses there.
 
 ## Live data sources (free, no keys)
 

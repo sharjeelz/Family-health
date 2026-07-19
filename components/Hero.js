@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import { useWeather, describeWeather } from "../lib/useWeather";
 import WeatherIcon from "./WeatherIcon";
 
+// The kitchen belongs to Mom :) — greet her by name.
+const HOST_NAME = "Hifza";
+
 function greeting(h) {
   if (h < 5) return "Good night";
   if (h < 12) return "Good morning";
@@ -51,7 +54,7 @@ export default function Hero() {
       <div className="relative flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="font-display text-3xl sm:text-4xl font-600 leading-tight">
-            {greeting(h)}
+            {greeting(h)}, {HOST_NAME}
           </p>
           <p className="text-sand-200/80 font-600 text-sm mt-1">{dateLabel}</p>
           <div className="flex items-baseline gap-1.5 mt-3">

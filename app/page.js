@@ -2,20 +2,25 @@
 
 import { useState, useEffect } from "react";
 import Hero from "../components/Hero";
+import HomeTab from "../components/HomeTab";
 import HealthTab from "../components/HealthTab";
 import NamazTab from "../components/NamazTab";
 import RemindersTab from "../components/RemindersTab";
 import StudyTab from "../components/StudyTab";
+import GroceryTab from "../components/GroceryTab";
+import AzaanManager from "../components/AzaanManager";
 
 const TABS = [
+  { id: "home", label: "Home", icon: "🏠" },
   { id: "health", label: "Health", icon: "🥗" },
   { id: "namaz", label: "Namaz", icon: "🕌" },
   { id: "study", label: "Study", icon: "📚" },
+  { id: "grocery", label: "Grocery", icon: "🛒" },
   { id: "reminders", label: "Reminders", icon: "📝" },
 ];
 
 export default function Home() {
-  const [tab, setTab] = useState("health");
+  const [tab, setTab] = useState("home");
   const [today, setToday] = useState(null);
 
   useEffect(() => {
@@ -24,12 +29,15 @@ export default function Home() {
 
   return (
     <main className="min-h-screen paper-bg pb-28">
+      <AzaanManager />
       <Hero />
 
       <div className="max-w-2xl mx-auto px-4 mt-5">
+        {tab === "home" && <HomeTab />}
         {tab === "health" && today && <HealthTab today={today} />}
         {tab === "namaz" && <NamazTab />}
         {tab === "study" && <StudyTab />}
+        {tab === "grocery" && <GroceryTab />}
         {tab === "reminders" && <RemindersTab />}
       </div>
 

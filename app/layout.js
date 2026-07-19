@@ -1,8 +1,36 @@
 import "./globals.css";
+import { Fraunces, Nunito } from "next/font/google";
+import RegisterSW from "../components/RegisterSW";
+
+// Self-hosted via next/font: fonts are downloaded at build time and served
+// from our own origin (no request to Google), so they load instantly and work
+// offline. The CSS variables match what globals.css / tailwind.config.js use.
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-display",
+  display: "swap",
+});
+const nunito = Nunito({
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800"],
+  variable: "--font-body",
+  display: "swap",
+});
 
 export const metadata = {
   title: "Family Health Tracker",
   description: "Check off meals, log water, and build healthy habits together.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Family",
+  },
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export const viewport = {
@@ -14,16 +42,11 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Nunito:wght@400;600;700;800&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body>{children}</body>
+    <html lang="en" className={`${fraunces.variable} ${nunito.variable}`}>
+      <body>
+        <RegisterSW />
+        {children}
+      </body>
     </html>
   );
 }
