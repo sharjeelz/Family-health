@@ -10,6 +10,7 @@ import StudyTab from "../components/StudyTab";
 import GroceryTab from "../components/GroceryTab";
 import AzaanManager from "../components/AzaanManager";
 import GuidesFab from "../components/GuidesFab";
+import WaterReminder from "../components/WaterReminder";
 import { LanguageProvider } from "../lib/i18n";
 
 const TABS = [
@@ -44,6 +45,7 @@ export default function Home() {
           {tab === "reminders" && <RemindersTab />}
         </div>
         <GuidesFab />
+        <WaterReminder />
       </LanguageProvider>
 
       <footer className="max-w-2xl mx-auto px-4 mt-8 text-center">

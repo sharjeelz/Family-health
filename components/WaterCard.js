@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { FAMILY, WATER_GOAL, WATER_SCHEDULE } from "../lib/plan";
 import { useLang, t } from "../lib/i18n";
 import Avatar from "./Avatar";
@@ -19,93 +19,32 @@ const SCHEDULE_MIN = WATER_SCHEDULE.map((s) => {
   return h * 60 + m;
 });
 
-// A soft two-note chime (best-effort; browsers may block until first tap).
-function playChime() {
-  try {
-    const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return;
-    const ctx = new AC();
-    [880, 1174.66].forEach((f, i) => {
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type = "sine";
-      o.frequency.value = f;
-      const s = ctx.currentTime + i * 0.18;
-      g.gain.setValueAtTime(0, s);
-      g.gain.linearRampToValueAtTime(0.14, s + 0.03);
-      g.gain.exponentialRampToValueAtTime(0.001, s + 0.4);
-      o.connect(g).connect(ctx.destination);
-      o.start(s);
-      o.stop(s + 0.42);
-    });
-    setTimeout(() => {
-      try {
-        ctx.close();
-      } catch {}
-    }, 1200);
-  } catch {}
-}
-
-function Drop({ filled }) {
-  return (
-    <svg width="20" height="24" viewBox="0 0 20 24" aria-hidden="true" className="transition-all">
-      <path
-        d="M10 1C10 1 2 10 2 15a8 8 0 0 0 16 0c0-5-8-14-8-14z"
-        fill={filled ? "#4A90C2" : "none"}
-        stroke={filled ? "#4A90C2" : "#C9BBA3"}
-        strokeWidth="1.6"
-      />
-    </svg>
-  );
-}
-
 export default function WaterCard({ water, onSet }) {
   const { lang } = useLang();
   const ur = lang === "ur";
 
-  // Live pacing + gentle nudge when a scheduled glass time passes.
   const [nowMin, setNowMin] = useState(null);
-  const [nudge, setNudge] = useState(false);
   const [chimeOn, setChimeOn] = useState(true);
-  const prevDueRef = useRef(null);
-  const nudgeTimer = useRef(null);
-  const chimeOnRef = useRef(true);
 
   useEffect(() => {
     try {
-      const on = window.localStorage.getItem(CHIME_KEY) !== "0";
-      setChimeOn(on);
-      chimeOnRef.current = on;
+      setChimeOn(window.localStorage.getItem(CHIME_KEY) !== "0");
     } catch {}
   }, []);
 
   useEffect(() => {
     const upd = () => {
       const d = new Date();
-      const m = d.getHours() * 60 + d.getMinutes();
-      setNowMin(m);
-      const due = SCHEDULE_MIN.filter((x) => x <= m).length;
-      // Fire only when a slot is crossed live (not on first load / catch-up).
-      if (prevDueRef.current !== null && due > prevDueRef.current) {
-        setNudge(true);
-        if (chimeOnRef.current) playChime();
-        if (nudgeTimer.current) clearTimeout(nudgeTimer.current);
-        nudgeTimer.current = setTimeout(() => setNudge(false), 6000);
-      }
-      prevDueRef.current = due;
+      setNowMin(d.getHours() * 60 + d.getMinutes());
     };
     upd();
-    const iv = setInterval(upd, 30000);
-    return () => {
-      clearInterval(iv);
-      if (nudgeTimer.current) clearTimeout(nudgeTimer.current);
-    };
+    const iv = setInterval(upd, 60000);
+    return () => clearInterval(iv);
   }, []);
 
   function toggleChime() {
     const on = !chimeOn;
     setChimeOn(on);
-    chimeOnRef.current = on;
     try {
       window.localStorage.setItem(CHIME_KEY, on ? "1" : "0");
     } catch {}
@@ -123,7 +62,7 @@ export default function WaterCard({ water, onSet }) {
   }
 
   return (
-    <section className={`bg-white rounded-3xl shadow-card p-5 sm:p-6 ${nudge ? "water-nudge" : ""}`}>
+    <section className="bg-white rounded-3xl shadow-card p-5 sm:p-6">
       <div className="flex items-center justify-between gap-2 mb-1">
         <h2 className={`text-2xl text-ink-800 ${ur ? "font-urdu" : "font-display font-600"}`}>
           {t("water", lang)}
@@ -204,5 +143,18 @@ export default function WaterCard({ water, onSet }) {
         })}
       </div>
     </section>
+  );
+}
+
+function Drop({ filled }) {
+  return (
+    <svg width="20" height="24" viewBox="0 0 20 24" aria-hidden="true" className="transition-all">
+      <path
+        d="M10 1C10 1 2 10 2 15a8 8 0 0 0 16 0c0-5-8-14-8-14z"
+        fill={filled ? "#4A90C2" : "none"}
+        stroke={filled ? "#4A90C2" : "#C9BBA3"}
+        strokeWidth="1.6"
+      />
+    </svg>
   );
 }
