@@ -11,12 +11,13 @@ import GroceryTab from "../components/GroceryTab";
 import AzaanManager from "../components/AzaanManager";
 import GuidesFab from "../components/GuidesFab";
 import WaterReminder from "../components/WaterReminder";
+import { QuranPlayerProvider } from "../components/QuranPlayer";
 import { LanguageProvider } from "../lib/i18n";
 
 const TABS = [
   { id: "home", label: "Home", icon: "🏠" },
   { id: "health", label: "Health", icon: "🥗" },
-  { id: "namaz", label: "Namaz", icon: "🕌" },
+  { id: "deen", label: "Deen", icon: "🕌" },
   { id: "study", label: "Study", icon: "📚" },
   { id: "grocery", label: "Grocery", icon: "🛒" },
   { id: "reminders", label: "Reminders", icon: "📝" },
@@ -36,16 +37,18 @@ export default function Home() {
       <Hero />
 
       <LanguageProvider>
-        <div className="max-w-2xl mx-auto px-4 mt-5">
-          {tab === "home" && <HomeTab />}
-          {tab === "health" && today && <HealthTab today={today} />}
-          {tab === "namaz" && <NamazTab />}
-          {tab === "study" && <StudyTab />}
-          {tab === "grocery" && <GroceryTab />}
-          {tab === "reminders" && <RemindersTab />}
-        </div>
-        <GuidesFab />
-        <WaterReminder />
+        <QuranPlayerProvider>
+          <div className="max-w-2xl mx-auto px-4 mt-5">
+            {tab === "home" && <HomeTab />}
+            {tab === "health" && today && <HealthTab today={today} />}
+            {tab === "deen" && <NamazTab />}
+            {tab === "study" && <StudyTab />}
+            {tab === "grocery" && <GroceryTab />}
+            {tab === "reminders" && <RemindersTab />}
+          </div>
+          <GuidesFab />
+          <WaterReminder />
+        </QuranPlayerProvider>
       </LanguageProvider>
 
       <footer className="max-w-2xl mx-auto px-4 mt-8 text-center">

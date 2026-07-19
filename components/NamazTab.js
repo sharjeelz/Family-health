@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { usePrayerTimes, nextPrayer } from "../lib/usePrayerTimes";
 import { AZAAN_ENABLED_KEY } from "./AzaanManager";
+import SurahPlayer from "./SurahPlayer";
 
 const ICONS = {
   Fajr: "🌅",
@@ -135,6 +136,8 @@ export default function NamazTab() {
           Times use the Umm al-Qura method. Confirm with your local masjid.
         </p>
       </section>
+
+      <SurahPlayer />
     </div>
   );
 }
