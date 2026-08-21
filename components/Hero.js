@@ -6,7 +6,7 @@ import { quoteOfDay } from "../lib/quotes";
 import WeatherIcon from "./WeatherIcon";
 
 // The kitchen belongs to Mom :) — greet her by name.
-const HOST_NAME = "Hifza";
+const HOST_NAME = "";
 
 function greeting(h) {
   if (h < 5) return "Good night";
@@ -16,7 +16,9 @@ function greeting(h) {
   return "Good night";
 }
 
-export default function Hero() {
+// `variant="rail"` is the wall-tablet layout: a tall, narrow column instead of
+// a full-width banner. Same data, stacked to fit beside the tab content.
+export default function Hero({ variant = "banner" }) {
   const [now, setNow] = useState(null);
   const weather = useWeather();
 
@@ -27,7 +29,7 @@ export default function Hero() {
   }, []);
 
   if (!now) {
-    return <div className="h-40" aria-hidden="true" />;
+    return <div className={variant === "rail" ? "h-full" : "h-40"} aria-hidden="true" />;
   }
 
   const h = now.getHours();
@@ -37,6 +39,11 @@ export default function Hero() {
   const dateLabel = now.toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+  const dateShort = now.toLocaleDateString("en-US", {
+    weekday: "long",
     month: "long",
     day: "numeric",
   });
@@ -56,19 +63,89 @@ export default function Hero() {
   const quote = quoteOfDay(now);
   const wx = weather.status === "ready" ? describeWeather(weather.code) : null;
 
+  const wash = (
+    <div
+      className="pointer-events-none absolute inset-0 opacity-70"
+      style={{
+        background:
+          "radial-gradient(120% 80% at 100% 0%, rgba(197,107,60,0.35), transparent 55%), radial-gradient(120% 90% at 0% 100%, rgba(90,132,101,0.30), transparent 55%)",
+      }}
+    />
+  );
+
+  if (variant === "rail") {
+    return (
+      <div className="relative flex flex-col text-sand-50">
+        <div className="relative px-5 pt-5">
+          <p className="font-display text-xl font-600 leading-tight">
+            {greeting(h)}{HOST_NAME ? "," : ""}
+            {HOST_NAME && (
+              <>
+                <br />
+                {HOST_NAME}
+              </>
+            )}
+          </p>
+
+          <div className="flex items-baseline gap-1.5 mt-3">
+            <span className="font-display text-6xl font-700 tabular-nums tracking-tight leading-none">
+              {hour12}:{mins}
+            </span>
+            <span className="text-sand-200/70 font-700 text-base">{ampm}</span>
+          </div>
+
+          <p className="text-sand-200/80 font-600 text-sm mt-2 leading-snug">{dateShort}</p>
+          {hijriLabel && (
+            <p className="text-sage-400 font-700 text-xs mt-0.5">{hijriLabel}</p>
+          )}
+
+          {/* Weather — laid out as a row so it costs little vertical space */}
+          <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-2xl px-3 py-2.5 mt-4">
+            {weather.status === "loading" && (
+              <span className="text-sand-200/70 text-sm">Loading…</span>
+            )}
+            {weather.status === "error" && (
+              <span className="text-sand-200/70 text-xs">Weather unavailable</span>
+            )}
+            {weather.status === "ready" && wx && (
+              <>
+                <WeatherIcon icon={wx.icon} size={40} />
+                <div className="min-w-0">
+                  <span className="font-display text-2xl font-700 leading-none">
+                    {weather.temp}°
+                  </span>
+                  <p className="text-sand-200/80 text-xs font-600 truncate">{wx.label}</p>
+                  {weather.city && (
+                    <p className="text-sand-200/60 text-xs font-600 truncate">{weather.city}</p>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Quote is the first thing to go when the screen is short */}
+          {quote && (
+            <p
+              dir="rtl"
+              lang="ur"
+              className="hidden [@media(min-height:700px)]:block font-urdu text-sage-400 text-xs leading-relaxed whitespace-pre-line mt-4"
+            >
+              {quote.text}
+              {quote.author ? `\n— ${quote.author}` : ""}
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative overflow-hidden rounded-b-[2.5rem] bg-ink-900 text-sand-50 px-6 pt-8 pb-7 shadow-card">
-      {/* ambient gradient wash */}
-      <div className="pointer-events-none absolute inset-0 opacity-70"
-        style={{
-          background:
-            "radial-gradient(120% 80% at 100% 0%, rgba(197,107,60,0.35), transparent 55%), radial-gradient(120% 90% at 0% 100%, rgba(90,132,101,0.30), transparent 55%)",
-        }}
-      />
+      {wash}
       <div className="relative flex items-start justify-between gap-4">
         <div className="min-w-0">
           <p className="font-display text-3xl sm:text-4xl font-600 leading-tight">
-            {greeting(h)}, {HOST_NAME}
+            {greeting(h)}{HOST_NAME ? `, ${HOST_NAME}` : ""}
           </p>
           {quote && (
             <p dir="rtl" lang="ur" className="font-urdu text-sage-400 text-xs sm:text-sm leading-relaxed whitespace-pre-line mt-1.5">

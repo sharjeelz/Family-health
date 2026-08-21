@@ -6,6 +6,13 @@ module.exports = {
   ],
   theme: {
     extend: {
+      // Wall-mounted tablet in landscape (Lenovo Tab M10 and friends).
+      // Keyed on orientation, not width: a 2000x1200 M10 at 2x density
+      // reports only ~1000 CSS px, which would fall short of `lg`.
+      screens: {
+        wall: { raw: "(min-width: 900px) and (orientation: landscape)" },
+        wallwide: { raw: "(min-width: 1200px) and (orientation: landscape)" },
+      },
       colors: {
         sand: {
           50: "#FBF8F3",

@@ -20,7 +20,7 @@ export default function GuidesFab() {
       <button
         onClick={() => setOpen(true)}
         aria-label={TITLE[lang] || "Guides"}
-        className="fixed right-4 bottom-24 z-30 w-14 h-14 rounded-full bg-clay-500 text-white shadow-card flex items-center justify-center text-2xl hover:bg-clay-600 active:scale-95 transition"
+        className="fixed right-4 bottom-24 wall:bottom-4 z-30 w-14 h-14 rounded-full bg-clay-500 text-white shadow-card flex items-center justify-center text-2xl hover:bg-clay-600 active:scale-95 transition"
       >
         <span aria-hidden="true">📖</span>
       </button>

@@ -228,7 +228,7 @@ export default function AzaanManager() {
       {showEnable && (
         <button
           onClick={unlockAudio}
-          className="fixed bottom-24 left-4 z-30 flex items-center gap-2 rounded-full bg-ink-800 text-sand-50 shadow-card pl-3 pr-4 py-2.5 active:scale-95 transition"
+          className="fixed bottom-24 left-4 wall:bottom-4 wall:left-auto wall:right-24 z-30 flex items-center gap-2 rounded-full bg-ink-800 text-sand-50 shadow-card pl-3 pr-4 py-2.5 active:scale-95 transition"
         >
           <span className="text-base" aria-hidden="true">🔔</span>
           <span className="text-xs font-800 leading-tight text-left">
