@@ -6,11 +6,15 @@ import QuoteCard from "./QuoteCard";
 import TodayGlance from "./TodayGlance";
 import NextPrayerCard from "./NextPrayerCard";
 import DaylightAndOccasion from "./DaylightAndOccasion";
+import DuaCards from "./DuaCards";
 // import AcCard from "./AcCard";   // AC widget paused — see below
 
 // The dashboard proper. The rail stays deliberately spare — clock, weather,
 // nav — and everything worth reading lives out here.
 export default function HomeTab() {
+  // Each block arrives just after the one above it.
+  const step = (i) => ({ animationDelay: `${i * 70}ms` });
+
   return (
     <div className="space-y-5">
       {/* Photo carousel paused for now — kept so we can bring it back.
@@ -18,7 +22,7 @@ export default function HomeTab() {
       */}
 
       {/* Prayer, daylight and the next occasion — three across on a wall tablet */}
-      <div className="grid gap-5 wall:grid-cols-3">
+      <div className="grid gap-5 wall:grid-cols-3 stagger">
         <NextPrayerCard />
         <DaylightAndOccasion />
       </div>
@@ -34,9 +38,21 @@ export default function HomeTab() {
       </div>
       */}
 
-      <TodayGlance />
-      <AyahCard />
-      <QuoteCard />
+      <div className="rise-in" style={step(3)}>
+        <TodayGlance />
+      </div>
+
+      {/* The going-out and coming-in duas, side by side */}
+      <div className="grid gap-5 wall:grid-cols-2 stagger">
+        <DuaCards />
+      </div>
+
+      <div className="rise-in" style={step(6)}>
+        <AyahCard />
+      </div>
+      <div className="rise-in" style={step(7)}>
+        <QuoteCard />
+      </div>
     </div>
   );
 }

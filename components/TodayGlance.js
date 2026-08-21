@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { WEEK, STUDY, CHILDREN } from "../lib/plan";
+import { STUDY, CHILDREN } from "../lib/plan";
 
 const REMINDER_KEY = "family-reminders-v1";
+const GROCERY_KEY = "family-grocery-v1";
 
 function to12h(hhmm) {
   const [hh, mm] = hhmm.split(":").map(Number);
@@ -11,12 +12,13 @@ function to12h(hhmm) {
   return `${hour12}:${String(mm).padStart(2, "0")} ${hh < 12 ? "AM" : "PM"}`;
 }
 
-// The bits worth knowing without opening a tab: what's for dinner, what the
-// kids need packed for tomorrow, and what's still outstanding today. Pulls from
-// the same data as the Health, Study and Reminders tabs.
+// The bits worth knowing without opening a tab: what still needs buying, what
+// the kids need packed for tomorrow, and what's outstanding today. Reads the
+// same stored lists as the Grocery and Reminders tabs.
 export default function TodayGlance() {
   const [today, setToday] = useState(null);
   const [reminders, setReminders] = useState([]);
+  const [grocery, setGrocery] = useState([]);
 
   useEffect(() => {
     setToday(new Date());
@@ -26,13 +28,18 @@ export default function TodayGlance() {
     } catch {
       setReminders([]);
     }
+    try {
+      const saved = JSON.parse(window.localStorage.getItem(GROCERY_KEY) || "[]");
+      setGrocery(Array.isArray(saved) ? saved : []);
+    } catch {
+      setGrocery([]);
+    }
   }, []);
 
   if (!today) return null;
 
   const dow = today.getDay();
-  const dinner = WEEK[dow]?.meals?.dinner;
-  const takeout = WEEK[dow]?.takeout;
+  const toBuy = grocery.filter((g) => !g.done);
 
   // Books get packed the night before, so show tomorrow's timetable.
   const tomorrowDow = (dow + 1) % 7;
@@ -53,19 +60,32 @@ export default function TodayGlance() {
       </p>
 
       <div className="grid gap-3 wall:grid-cols-3 wallwide:grid-cols-3">
-        {/* Dinner */}
+        {/* Shopping list */}
         <div className="rounded-2xl bg-sand-50 border border-sand-200 p-4">
           <p className="text-clay-600 font-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
-            Dinner
-            {takeout && (
+            Shopping
+            {toBuy.length > 0 && (
               <span className="ml-auto text-[0.6rem] bg-clay-500 text-white rounded-full px-2 py-0.5">
-                TAKEOUT
+                {toBuy.length}
               </span>
             )}
           </p>
-          <p className="text-ink-800 font-600 text-sm mt-2 leading-relaxed">
-            {dinner || "Nothing planned"}
-          </p>
+          {toBuy.length === 0 ? (
+            <p className="text-ink-700/50 font-600 text-sm mt-2">Nothing to buy</p>
+          ) : (
+            <ul className="mt-2 space-y-1">
+              {toBuy.slice(0, 5).map((g) => (
+                <li key={g.id} className="text-ink-800 font-600 text-xs leading-relaxed">
+                  {g.text}
+                </li>
+              ))}
+              {toBuy.length > 5 && (
+                <li className="text-ink-700/40 font-700 text-[0.65rem]">
+                  +{toBuy.length - 5} more
+                </li>
+              )}
+            </ul>
+          )}
         </div>
 
         {/* Tomorrow's bags */}

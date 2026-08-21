@@ -23,9 +23,39 @@ body {
    fallbacks are the original daytime values. */
 .paper-bg {
   background-image:
-    radial-gradient(circle at 15% 0%, var(--amb-1, rgba(197, 107, 60, 0.05)), transparent 40%),
-    radial-gradient(circle at 85% 100%, var(--amb-2, rgba(90, 132, 101, 0.06)), transparent 45%);
+    radial-gradient(circle at 12% -5%, var(--amb-1, rgba(197, 107, 60, 0.18)), transparent 62%),
+    radial-gradient(circle at 88% 105%, var(--amb-2, rgba(90, 132, 101, 0.20)), transparent 66%);
   transition: background-image 4s linear;
+}
+
+/* Cards arrive in a short stagger rather than all at once. The delay is set
+   per card inline; keep the total under ~0.5s so it never feels like waiting. */
+@media (prefers-reduced-motion: no-preference) {
+  .rise-in {
+    animation: riseIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* Stagger a row of cards. Done in plain CSS because Tailwind's [&>*] variant
+     can only generate its own utilities, not a custom class like .rise-in. */
+  .stagger > * { animation: riseIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  .stagger > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger > *:nth-child(2) { animation-delay: 70ms; }
+  .stagger > *:nth-child(3) { animation-delay: 140ms; }
+  .stagger > *:nth-child(4) { animation-delay: 210ms; }
+  .stagger > *:nth-child(5) { animation-delay: 280ms; }
+
+  /* Next prayer is close — a slow breath, not a blink. */
+  .pulse-soon {
+    animation: pulseSoon 2.4s ease-in-out infinite;
+  }
+  @keyframes pulseSoon {
+    0%, 100% { box-shadow: 0 4px 20px rgba(60, 52, 40, 0.08); }
+    50% { box-shadow: 0 0 0 4px rgba(197, 107, 60, 0.18), 0 6px 26px rgba(197, 107, 60, 0.22); }
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {

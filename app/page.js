@@ -98,10 +98,10 @@ export default function Home() {
           {/* One wash across the whole rail — inside the Hero it stopped at the
               hero's height and left a visible seam above the nav. */}
           <div
-            className="pointer-events-none absolute inset-0 opacity-70"
+            className="pointer-events-none absolute inset-0 opacity-70 transition-[background-image] duration-[4s]"
             style={{
               background:
-                "radial-gradient(120% 40% at 100% 0%, rgba(197,107,60,0.35), transparent 55%), radial-gradient(120% 45% at 0% 100%, rgba(90,132,101,0.30), transparent 55%)",
+                "radial-gradient(120% 40% at 100% 0%, var(--amb-rail-1, rgba(197,107,60,0.35)), transparent 55%), radial-gradient(120% 45% at 0% 100%, var(--amb-rail-2, rgba(90,132,101,0.30)), transparent 55%)",
             }}
           />
           {/* Hero and nav share one scroll container so the menu sits directly

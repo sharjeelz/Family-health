@@ -33,8 +33,12 @@ export default function NextPrayerCard() {
   const next = times && now ? nextPrayer(times, now) : null;
   const time = next && times ? times[next.activeIndex].time : null;
 
+  // Under 15 minutes counts as "soon" — worth catching the eye from across the
+  // room, but a slow breath rather than anything urgent.
+  const soon = next && next.hours === 0 && next.minutes <= 15;
+
   return (
-    <section className="bg-white rounded-3xl shadow-card p-5">
+    <section className={`bg-white rounded-3xl shadow-card p-5 ${soon ? "pulse-soon" : ""}`}>
       <p className="text-ink-700/45 font-800 text-[0.65rem] uppercase tracking-[0.18em] mb-3 flex items-center gap-2">
         Next prayer
       </p>
