@@ -42,6 +42,7 @@ module.exports = {
         display: ["var(--font-display)", "Georgia", "serif"],
         body: ["var(--font-body)", "system-ui", "sans-serif"],
         arabic: ["var(--font-arabic)", "Georgia", "serif"],
+        quran: ["var(--font-quran)", "var(--font-arabic)", "Georgia", "serif"],
         urdu: ["var(--font-urdu)", "var(--font-arabic)", "serif"],
       },
       boxShadow: {

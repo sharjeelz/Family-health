@@ -1,5 +1,5 @@
 import "./globals.css";
-import { Fraunces, Nunito, Noto_Naskh_Arabic, Noto_Nastaliq_Urdu } from "next/font/google";
+import { Fraunces, Nunito, Noto_Naskh_Arabic, Noto_Nastaliq_Urdu, Amiri_Quran } from "next/font/google";
 import RegisterSW from "../components/RegisterSW";
 
 // Self-hosted via next/font: fonts are downloaded at build time and served
@@ -22,6 +22,14 @@ const naskh = Noto_Naskh_Arabic({
   subsets: ["arabic"],
   weight: ["400", "700"],
   variable: "--font-arabic",
+  display: "swap",
+});
+// Amiri Quran is cut specifically for Quranic text — it carries the full set of
+// vocalisation marks and positions them properly, which plain Naskh does not.
+const amiriQuran = Amiri_Quran({
+  subsets: ["arabic"],
+  weight: ["400"],
+  variable: "--font-quran",
   display: "swap",
 });
 const nastaliq = Noto_Nastaliq_Urdu({
@@ -57,7 +65,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${nunito.variable} ${naskh.variable} ${nastaliq.variable}`}
+      className={`${fraunces.variable} ${nunito.variable} ${naskh.variable} ${amiriQuran.variable} ${nastaliq.variable}`}
     >
       <body>
         <RegisterSW />

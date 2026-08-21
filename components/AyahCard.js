@@ -13,7 +13,7 @@ export default function AyahCard() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-ink-900 to-ink-800 text-sand-50 rounded-3xl shadow-card p-6 sm:p-7">
+    <section className="relative overflow-hidden bg-gradient-to-br from-ink-900 to-ink-800 text-sand-50 rounded-3xl shadow-card p-5">
       {/* soft ambient glow */}
       <div
         className="pointer-events-none absolute inset-0 opacity-60"
@@ -23,7 +23,7 @@ export default function AyahCard() {
         }}
       />
       <div className="relative">
-        <p className="text-sand-200/70 font-800 text-xs uppercase tracking-[0.18em] mb-4 flex items-center gap-2">
+        <p className="text-sand-200/70 font-800 text-[0.65rem] uppercase tracking-[0.18em] mb-3 flex items-center gap-2">
           <span aria-hidden="true">✦</span> Ayah of the day
         </p>
 
@@ -32,18 +32,18 @@ export default function AyahCard() {
             <p
               dir="rtl"
               lang="ar"
-              className="font-arabic leading-[2] text-2xl sm:text-3xl text-sand-50"
+              className="font-quran leading-[2.4] text-2xl sm:text-3xl text-sand-50"
             >
               {ayah.arabic}
             </p>
             <p
               dir="rtl"
               lang="ur"
-              className="font-urdu text-sand-100/90 text-lg sm:text-xl mt-5 leading-[2.4]"
+              className="font-urdu text-sand-100/90 text-base mt-4 leading-[2.2]"
             >
               {ayah.urdu}
             </p>
-            <p dir="rtl" lang="ur" className="font-urdu text-sage-400 font-500 text-sm mt-3">
+            <p dir="rtl" lang="ur" className="font-urdu text-sage-400 font-500 text-xs mt-3">
               {ayah.ref}
             </p>
           </>

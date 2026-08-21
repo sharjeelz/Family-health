@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useWeather, describeWeather } from "../lib/useWeather";
 import { quoteOfDay } from "../lib/quotes";
 import WeatherIcon from "./WeatherIcon";
+import NextPrayerCard from "./NextPrayerCard";
 
 // The kitchen belongs to Mom :) — greet her by name.
 const HOST_NAME = "";
@@ -123,7 +124,10 @@ export default function Hero({ variant = "banner" }) {
             )}
           </div>
 
-          {/* Quote is the first thing to go when the screen is short */}
+          <NextPrayerCard />
+
+          {/* Moved to the Home tab, next to the ayah of the day.
+              Kept here in case we ever want it back in the rail.
           {quote && (
             <p
               dir="rtl"
@@ -134,6 +138,7 @@ export default function Hero({ variant = "banner" }) {
               {quote.author ? `\n— ${quote.author}` : ""}
             </p>
           )}
+          */}
         </div>
       </div>
     );

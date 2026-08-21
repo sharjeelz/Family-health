@@ -17,12 +17,14 @@ import ReminderWatcher from "../components/ReminderWatcher";
 import { QuranPlayerProvider } from "../components/QuranPlayer";
 import { LanguageProvider } from "../lib/i18n";
 
+// Health, Study and Chores are hidden for now. Their panels below are left
+// wired up, so uncommenting a line here brings the tab straight back.
 const TABS = [
   { id: "home", label: "Home", icon: "🏠" },
-  { id: "health", label: "Health", icon: "🥗" },
+  // { id: "health", label: "Health", icon: "🥗" },
   { id: "deen", label: "Deen", icon: "🕌" },
-  { id: "study", label: "Study", icon: "📚" },
-  { id: "chores", label: "Chores", icon: "⭐" },
+  // { id: "study", label: "Study", icon: "📚" },
+  // { id: "chores", label: "Chores", icon: "⭐" },
   { id: "grocery", label: "Grocery", icon: "🛒" },
   { id: "reminders", label: "Reminders", icon: "📝" },
 ];
@@ -105,7 +107,7 @@ export default function Home() {
           <div className="relative flex-1 min-h-0 overflow-y-auto">
             <Hero variant="rail" />
 
-            <nav className="px-5 pb-5 pt-4">
+            <nav className="px-5 pb-5 pt-4 [@media(max-height:699px)]:grid [@media(max-height:699px)]:grid-cols-2 [@media(max-height:699px)]:gap-x-2">
             {TABS.map((t) => {
               const active = tab === t.id;
               return (
