@@ -16,8 +16,8 @@ function countdownLabel(next) {
   return "now";
 }
 
-// Next-prayer widget for the rail. Reads the same cached Umm al-Qura times as
-// the Deen tab and the azaan alert.
+// Next-prayer widget. Reads the same cached Umm al-Qura times as the Deen tab
+// and the azaan alert.
 export default function NextPrayerCard() {
   const { status, times } = usePrayerTimes();
   const [now, setNow] = useState(null);
@@ -34,31 +34,55 @@ export default function NextPrayerCard() {
   const time = next && times ? times[next.activeIndex].time : null;
 
   return (
-    <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm rounded-2xl px-3 py-2.5 mt-3">
-      <span className="text-2xl leading-none shrink-0" aria-hidden="true">
-        🕌
-      </span>
-      <div className="min-w-0 flex-1">
-        {status === "loading" && !next && (
-          <span className="text-sand-200/70 text-sm">Loading…</span>
-        )}
-        {status === "error" && !next && (
-          <span className="text-sand-200/70 text-xs">Prayer times unavailable</span>
-        )}
-        {next && (
-          <>
-            <div className="flex items-baseline justify-between gap-2">
-              <span className="font-display text-lg font-700 leading-none truncate">
-                {next.nextName}
-              </span>
-              <span className="text-sand-100 font-700 text-sm tabular-nums shrink-0">
-                {to12h(time)}
-              </span>
-            </div>
-            <p className="text-sage-400 text-xs font-700 mt-1">{countdownLabel(next)}</p>
-          </>
-        )}
-      </div>
-    </div>
+    <section className="bg-white rounded-3xl shadow-card p-5">
+      <p className="text-ink-700/45 font-800 text-[0.65rem] uppercase tracking-[0.18em] mb-3 flex items-center gap-2">
+        Next prayer
+      </p>
+
+      {status === "loading" && !next && (
+        <p className="text-ink-700/50 font-600 text-sm">Loading…</p>
+      )}
+      {status === "error" && !next && (
+        <p className="text-ink-700/50 font-600 text-sm">Prayer times unavailable</p>
+      )}
+
+      {next && (
+        <>
+          <div className="flex items-baseline justify-between gap-2">
+            <span className="font-display text-2xl font-700 text-ink-800 truncate">
+              {next.nextName}
+            </span>
+            <span className="text-ink-800 font-800 text-lg tabular-nums shrink-0">
+              {to12h(time)}
+            </span>
+          </div>
+          <p className="text-clay-600 text-sm font-800 mt-1">{countdownLabel(next)}</p>
+
+          {/* The whole day at a glance — where we are in it, not just what's next */}
+          <div className="flex items-end gap-1.5 mt-4">
+            {times.map((p, i) => {
+              const done = i < next.activeIndex;
+              const isNext = i === next.activeIndex;
+              return (
+                <div key={p.name} className="flex-1 min-w-0 text-center">
+                  <div
+                    className={`h-1.5 rounded-full transition-colors ${
+                      isNext ? "bg-clay-500" : done ? "bg-sage-400" : "bg-sand-200"
+                    }`}
+                  />
+                  <span
+                    className={`block text-[0.65rem] font-800 mt-1.5 truncate ${
+                      isNext ? "text-clay-600" : done ? "text-sage-600" : "text-ink-700/35"
+                    }`}
+                  >
+                    {p.name.slice(0, 3)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </section>
   );
 }

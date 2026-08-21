@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useWeather, describeWeather } from "../lib/useWeather";
 import { quoteOfDay } from "../lib/quotes";
 import WeatherIcon from "./WeatherIcon";
-import NextPrayerCard from "./NextPrayerCard";
 
 // The kitchen belongs to Mom :) — greet her by name.
 const HOST_NAME = "";
@@ -116,15 +115,18 @@ export default function Hero({ variant = "banner" }) {
                     {weather.temp}°
                   </span>
                   <p className="text-sand-200/80 text-xs font-600 truncate">{wx.label}</p>
-                  {weather.city && (
-                    <p className="text-sand-200/60 text-xs font-600 truncate">{weather.city}</p>
-                  )}
+                  <p className="text-sand-200/60 text-xs font-600 truncate">
+                    {weather.high != null && weather.low != null && (
+                      <span className="tabular-nums">
+                        H {weather.high}° · L {weather.low}°
+                      </span>
+                    )}
+                    {weather.city && (weather.high != null ? ` · ${weather.city}` : weather.city)}
+                  </p>
                 </div>
               </>
             )}
           </div>
-
-          <NextPrayerCard />
 
           {/* Moved to the Home tab, next to the ayah of the day.
               Kept here in case we ever want it back in the rail.

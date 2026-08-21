@@ -18,11 +18,14 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Subtle warm paper texture via layered gradients */
+/* Subtle warm paper texture via layered gradients. The two tints are driven by
+   AmbientBackground so the room's light shifts with the time of day; the
+   fallbacks are the original daytime values. */
 .paper-bg {
   background-image:
-    radial-gradient(circle at 15% 0%, rgba(197, 107, 60, 0.05), transparent 40%),
-    radial-gradient(circle at 85% 100%, rgba(90, 132, 101, 0.06), transparent 45%);
+    radial-gradient(circle at 15% 0%, var(--amb-1, rgba(197, 107, 60, 0.05)), transparent 40%),
+    radial-gradient(circle at 85% 100%, var(--amb-2, rgba(90, 132, 101, 0.06)), transparent 45%);
+  transition: background-image 4s linear;
 }
 
 @media (prefers-reduced-motion: no-preference) {

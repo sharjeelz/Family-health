@@ -11,6 +11,7 @@ import ChoresTab from "../components/ChoresTab";
 import GroceryTab from "../components/GroceryTab";
 import AzaanManager from "../components/AzaanManager";
 import KeepAwake from "../components/KeepAwake";
+import AmbientBackground from "../components/AmbientBackground";
 import GuidesFab from "../components/GuidesFab";
 import WaterReminder from "../components/WaterReminder";
 import ReminderWatcher from "../components/ReminderWatcher";
@@ -89,6 +90,7 @@ export default function Home() {
     return (
       <main className="h-screen overflow-hidden paper-bg flex">
         <KeepAwake />
+        <AmbientBackground />
         <AzaanManager />
 
         {/* Left rail: the always-on glanceable half — clock, date, weather, nav */}
@@ -107,7 +109,7 @@ export default function Home() {
           <div className="relative flex-1 min-h-0 overflow-y-auto">
             <Hero variant="rail" />
 
-            <nav className="px-5 pb-5 pt-4 [@media(max-height:699px)]:grid [@media(max-height:699px)]:grid-cols-2 [@media(max-height:699px)]:gap-x-2">
+            <nav className="px-5 pb-5 pt-4">
             {TABS.map((t) => {
               const active = tab === t.id;
               return (
@@ -115,14 +117,24 @@ export default function Home() {
                   key={t.id}
                   onClick={() => setTab(t.id)}
                   aria-current={active ? "page" : undefined}
-                  className={`w-full flex items-center gap-3 rounded-2xl px-3 py-2.5 mt-0.5 text-left transition-colors ${
-                    active ? "bg-clay-500 text-sand-50" : "text-sand-200/60 hover:bg-white/5"
+                  className={`relative w-full rounded-xl pl-4 pr-3 py-3 mt-0.5 text-left transition-colors ${
+                    active
+                      ? "bg-white/10 text-sand-50"
+                      : "text-sand-200/50 hover:bg-white/5 hover:text-sand-200/80"
                   }`}
                 >
-                  <span className="text-xl leading-none" aria-hidden="true">
-                    {t.icon}
+                  {/* A quiet marker reads more considered than a filled pill */}
+                  <span
+                    aria-hidden="true"
+                    className={`absolute left-0 top-1/2 -translate-y-1/2 w-0.5 rounded-full transition-all ${
+                      active ? "h-5 bg-clay-400" : "h-0 bg-transparent"
+                    }`}
+                  />
+                  <span
+                    className={`text-sm tracking-wide ${active ? "font-800" : "font-600"}`}
+                  >
+                    {t.label}
                   </span>
-                  <span className="font-800 text-sm">{t.label}</span>
                 </button>
               );
             })}
@@ -146,6 +158,7 @@ export default function Home() {
   return (
     <main className="min-h-screen paper-bg pb-28">
       <KeepAwake />
+      <AmbientBackground />
       <AzaanManager />
       <Hero />
 
