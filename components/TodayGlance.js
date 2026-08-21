@@ -52,7 +52,7 @@ export default function TodayGlance() {
         Today at a glance
       </p>
 
-      <div className="grid gap-3 wall:grid-cols-3">
+      <div className="grid gap-3 wall:grid-cols-3 wallwide:grid-cols-3">
         {/* Dinner */}
         <div className="rounded-2xl bg-sand-50 border border-sand-200 p-4">
           <p className="text-clay-600 font-800 text-xs uppercase tracking-wider flex items-center gap-1.5">
