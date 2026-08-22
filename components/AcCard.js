@@ -8,7 +8,7 @@ const FAN_LABELS = { auto: "Auto", low: "Low", med: "Med", high: "High" };
 
 // One air conditioner. The unit's own reported state drives everything —
 // including its temperature range, which differs between makes.
-export default function AcCard({ unit, onUpdated }) {
+export default function AcCard({ unit, onUpdated, onReload }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(unit.error || null);
 
@@ -26,7 +26,11 @@ export default function AcCard({ unit, onUpdated }) {
     pushUnit(unit.id, patch)
       .then((fresh) => {
         setError(null);
-        if (fresh) onUpdated(fresh);
+        if (!fresh) return;
+        onUpdated(fresh);
+        // The cloud had not applied the change yet and we are showing what was
+        // asked for; check back shortly for the real state.
+        if (fresh.pending && onReload) setTimeout(onReload, 5000);
       })
       .catch((e) => setError(e.message))
       .finally(() => setBusy(false));

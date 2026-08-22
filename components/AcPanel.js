@@ -18,7 +18,19 @@ export default function AcPanel() {
       .catch((e) => setError(e.message));
   }, []);
 
-  useEffect(load, [load]);
+  // Refresh periodically: the units are also driven by their own remotes and
+  // phone apps, so without this a card can sit wrong for hours. Also refresh
+  // when the tablet comes back to the foreground.
+  useEffect(() => {
+    load();
+    const timer = setInterval(load, 60000);
+    const onVisible = () => document.visibilityState === "visible" && load();
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [load]);
 
   // Replace one unit in place after a button press.
   const onUpdated = useCallback((unit) => {
@@ -41,7 +53,7 @@ export default function AcPanel() {
   return (
     <>
       {units.map((u) => (
-        <AcCard key={u.id} unit={u} onUpdated={onUpdated} />
+        <AcCard key={u.id} unit={u} onUpdated={onUpdated} onReload={load} />
       ))}
     </>
   );

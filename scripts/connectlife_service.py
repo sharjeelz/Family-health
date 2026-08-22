@@ -85,12 +85,28 @@ async def _list():
     return {"appliances": [_serialise(a) for a in await _appliances()]}
 
 
+async def _find(api, puid):
+    return next((a for a in await api.get_appliances() if a.puid == puid), None)
+
+
 async def _set(puid, properties):
     api = await _api_get()
     await api.update_appliance(puid, properties)
-    # Report what the unit actually holds, not what was asked for.
-    match = next((a for a in await api.get_appliances() if a.puid == puid), None)
-    return {"puid": puid, "status": match.status_list if match else None}
+
+    # The cloud does not apply the change synchronously: reading back straight
+    # away returns the OLD status, which would make the dashboard snap back to
+    # the previous state. Poll until the properties we set are reflected.
+    deadline_tries = 6
+    for attempt in range(deadline_tries):
+        await asyncio.sleep(0.5)
+        match = await _find(api, puid)
+        status = match.status_list if match else {}
+        if all(status.get(k) == v for k, v in properties.items()):
+            return {"puid": puid, "status": status, "pending": False}
+
+    # Still not reflected. Say so rather than reporting a stale state as fact —
+    # the caller keeps showing what was asked for.
+    return {"puid": puid, "status": status, "pending": True}
 
 
 # A stale session shows up as an exception on use; drop it and retry once.
