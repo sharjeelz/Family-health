@@ -96,9 +96,10 @@ async def _set(puid, properties):
     # The cloud does not apply the change synchronously: reading back straight
     # away returns the OLD status, which would make the dashboard snap back to
     # the previous state. Poll until the properties we set are reflected.
-    deadline_tries = 6
-    for attempt in range(deadline_tries):
-        await asyncio.sleep(0.5)
+    # Kept modest on purpose: each try costs a cloud fetch, and lib/hisense.js
+    # gives up at 20s. Better to answer "pending" than to hang the dashboard.
+    for attempt in range(5):
+        await asyncio.sleep(0.4)
         match = await _find(api, puid)
         status = match.status_list if match else {}
         if all(status.get(k) == v for k, v in properties.items()):
