@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { STUDY, CHILDREN } from "../lib/plan";
 import Avatar from "./Avatar";
 import SchoolEvents from "./SchoolEvents";
+import SchoolCalendarTable from "./SchoolCalendarTable";
 import Syllabus from "./Syllabus";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -99,6 +100,7 @@ export default function StudyTab() {
       </section>
 
       <SchoolEvents />
+      <SchoolCalendarTable />
       <Syllabus />
     </div>
   );

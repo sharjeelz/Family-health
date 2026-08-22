@@ -24,7 +24,7 @@ const TABS = [
   { id: "home", label: "Home" },
   // { id: "health", label: "Health" },
   { id: "deen", label: "Deen" },
-  // { id: "study", label: "Study" },
+  { id: "study", label: "Study" },
   // { id: "chores", label: "Chores" },
   { id: "grocery", label: "Grocery" },
   { id: "reminders", label: "Reminders" },

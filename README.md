@@ -1,6 +1,6 @@
 # Family Dashboard
 
-A fridge-mounted family command center for a tablet. Live hero (greeting, clock, date, auto-location weather) plus tabbed tools. Built with Next.js + Tailwind. Deploys to Vercel with zero config — no API keys needed.
+A fridge-mounted family command center for a tablet. Live hero (greeting, clock, date, auto-location weather) plus tabbed tools. Built with Next.js + Tailwind. Runs on the home network — no cloud, no API keys.
 
 ## Tabs
 
@@ -24,18 +24,76 @@ A fridge-mounted family command center for a tablet. Live hero (greeting, clock,
 
 Both ask for the browser's location once. If the user denies it, they fall back to Riyadh. To change the fallback, edit the coordinates in `lib/useWeather.js` and `lib/usePrayerTimes.js`.
 
-## Run locally
+## Run it (local only)
+
+This runs on your own machine and is served to the tablet over your wifi — there
+is no cloud deploy. The school calendar reads from the Docker MySQL on the other
+laptop, which is only reachable on the LAN.
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
+npm run dev              # http://localhost:3000 — hot reload while editing
+# or, for the always-on fridge tablet:
+npm run build && npm start
 ```
 
-## Deploy to Vercel
+Both bind to `0.0.0.0`, so from the tablet open **http://<this-machine-ip>:3000**
+(currently `192.168.8.6`), then "Add to Home Screen" for a kiosk-like dashboard.
 
-Push to GitHub → import at vercel.com/new → Deploy. Or run `vercel` in this folder.
+Windows Firewall will ask to allow Node on the private network the first time —
+say yes, or the tablet gets a timeout.
 
-**Tablet tip:** open the deployed URL on the tablet, then "Add to Home Screen" for a full-screen, kiosk-like dashboard.
+## Database (MySQL on the LAN)
+
+Connection settings live in `.env.local` (gitignored):
+
+```
+MYSQL_HOST=192.168.8.19     # Docker MySQL on the other laptop
+MYSQL_PORT=3306
+MYSQL_USER=root
+MYSQL_PASSWORD=...
+MYSQL_DATABASE=family_health
+```
+
+- `lib/db.js` — shared connection pool. **Server-side only** — never import it
+  from a `"use client"` component.
+- `app/api/school-calendar/route.js` — serves the calendar rows to the browser.
+- `scripts/seed-school-calendar.mjs` — creates the `family_health` database and
+  the `school_calendar` table, then seeds it from `lib/calendar.js`. Idempotent,
+  so re-run it whenever you edit that file:
+
+  ```bash
+  node scripts/seed-school-calendar.mjs
+  ```
+
+If the other laptop is off, the Study tab shows "Database unreachable" instead of
+breaking — everything else keeps working.
+
+## Setting it up on the always-on laptop
+
+The dashboard is meant to live on the same laptop as the MySQL container
+(`192.168.8.19`), so only one machine has to stay awake for the fridge tablet.
+On that laptop:
+
+```bash
+git clone https://github.com/sharjeelz/Family-health.git
+cd Family-health
+npm install
+cp .env.example .env.local        # then set MYSQL_PASSWORD
+```
+
+Because MySQL is now on the *same* box, `.env.local` should say
+`MYSQL_HOST=127.0.0.1` — not the LAN IP.
+
+```bash
+node scripts/seed-school-calendar.mjs   # only needed the first time
+npm run build && npm start
+```
+
+The tablet then opens **http://192.168.8.19:3000**. Allow Node through the
+firewall on the private network when prompted, or the tablet times out.
+
+To pick up later changes: `git pull && npm install && npm run build && npm start`.
 
 ## Adding your own data
 
