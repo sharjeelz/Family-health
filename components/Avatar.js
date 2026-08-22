@@ -1,12 +1,18 @@
 "use client";
 
 // Circular thumbnail. If a photo is given it's cropped to a face-framed circle
-// (via object-cover + a per-photo focal point); otherwise the emoji is shown.
-export default function Avatar({ photo, pos, emoji, size = 32, alt = "" }) {
+// (via object-cover + a per-photo focal point); otherwise it falls back to the
+// person's initial, which reads better than an emoji at small sizes.
+export default function Avatar({ photo, pos, size = 32, alt = "" }) {
   if (!photo) {
+    const initial = (alt || "").trim().charAt(0).toUpperCase();
     return (
-      <span aria-hidden="true" style={{ fontSize: size * 0.72, lineHeight: 1 }}>
-        {emoji}
+      <span
+        className="inline-flex items-center justify-center rounded-full bg-sand-100 border border-sand-200 text-ink-700/60 font-800 shrink-0 align-middle"
+        style={{ width: size, height: size, fontSize: size * 0.42 }}
+        aria-hidden="true"
+      >
+        {initial}
       </span>
     );
   }

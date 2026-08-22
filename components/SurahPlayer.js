@@ -18,7 +18,6 @@ export default function SurahPlayer() {
   return (
     <section className="bg-white rounded-3xl shadow-card p-5 sm:p-6">
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-xl" aria-hidden="true">📖</span>
         <h2 className="font-display text-2xl font-600 text-ink-800">Listen to Qur'an</h2>
       </div>
       <p className="text-sm text-ink-700/55 mb-4">Tap a surah to play it anytime — keeps playing across tabs.</p>

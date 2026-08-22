@@ -19,7 +19,6 @@ export default function BreadGuide({ defaultOpen = false }) {
         className="w-full flex items-center justify-between p-5 sm:p-6 text-left"
       >
         <span className="flex items-center gap-3">
-          <span className="text-xl" aria-hidden="true">🌾</span>
           <span dir={ur ? "rtl" : undefined}>
             <span className={`block text-2xl text-ink-800 leading-tight ${ur ? "font-urdu" : "font-display font-600"}`}>
               {t("breadTitle", lang)}
@@ -71,7 +70,7 @@ export default function BreadGuide({ defaultOpen = false }) {
           </div>
 
           <p className={`text-sm text-ink-700/70 mt-4 bg-sand-50 rounded-2xl p-4 border border-sand-200 ${ur ? "font-urdu leading-loose" : "leading-snug"}`}>
-            <span aria-hidden="true">💡 </span>{guide.note}
+{guide.note}
           </p>
         </div>
       )}

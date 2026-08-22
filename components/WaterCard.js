@@ -74,7 +74,7 @@ export default function WaterCard({ water, onSet }) {
             aria-pressed={chimeOn}
             className="text-base text-ink-700/40 hover:text-[#2f6d99] transition"
           >
-            <span aria-hidden="true">{chimeOn ? "🔔" : "🔕"}</span>
+            <span className="font-800">{chimeOn ? "On" : "Off"}</span>
           </button>
           <span className={`text-xs text-ink-700/50 ${ur ? "font-urdu" : "font-600"}`}>
             {t("waterGoal", lang, WATER_GOAL)}
@@ -88,7 +88,6 @@ export default function WaterCard({ water, onSet }) {
       {/* live pacing reminder */}
       {pace && (
         <div className="flex items-center gap-2 rounded-2xl bg-[#4A90C2]/10 border border-[#4A90C2]/25 px-3 py-2 mb-4">
-          <span className="text-base" aria-hidden="true">⏱️</span>
           <span className={`text-sm font-800 text-[#2f6d99] ${ur ? "font-urdu" : ""}`}>{pace}</span>
         </div>
       )}
@@ -102,7 +101,7 @@ export default function WaterCard({ water, onSet }) {
             <div key={person.id}>
               <div className="flex items-center justify-between mb-1.5">
                 <span className="flex items-center gap-2 font-800 text-sm text-ink-800">
-                  <Avatar photo={person.photo} pos={person.pos} emoji={person.emoji} size={30} alt={person.name} />
+                  <Avatar photo={person.photo} pos={person.pos} size={30} alt={person.name} />
                   {person.name}
                 </span>
                 <span className="flex items-center gap-2">

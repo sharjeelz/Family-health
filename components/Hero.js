@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useWeather, describeWeather } from "../lib/useWeather";
 import { quoteOfDay } from "../lib/quotes";
+import { formatHijri } from "../lib/hijriEvents";
 import WeatherIcon from "./WeatherIcon";
 
 // The kitchen belongs to Mom :) — greet her by name.
@@ -48,17 +49,10 @@ export default function Hero({ variant = "banner" }) {
     day: "numeric",
   });
 
-  // Hijri date via the Umm al-Qura Islamic calendar (matches the prayer-time method).
-  let hijriLabel = null;
-  try {
-    hijriLabel = new Intl.DateTimeFormat("en-GB-u-ca-islamic-umalqura", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }).format(now);
-  } catch {
-    hijriLabel = null;
-  }
+  // Hijri date via the Umm al-Qura Islamic calendar (matches the prayer-time
+  // method). formatHijri names the month itself rather than trusting Intl's
+  // "long" format, which prints Gregorian month names on some devices.
+  const hijriLabel = formatHijri(now);
 
   const quote = quoteOfDay(now);
   const wx = weather.status === "ready" ? describeWeather(weather.code) : null;

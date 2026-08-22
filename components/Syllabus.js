@@ -55,7 +55,6 @@ export default function Syllabus() {
   return (
     <section className="bg-white rounded-3xl shadow-card p-5 sm:p-6">
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-xl" aria-hidden="true">📔</span>
         <h2 className="font-display text-2xl font-600 text-ink-800">Syllabus — what to prepare</h2>
       </div>
       <p className="text-sm text-ink-700/55 mb-4">Straight from the school syllabus. Past weeks are hidden.</p>

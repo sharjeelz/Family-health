@@ -20,9 +20,14 @@ export default function GuidesFab() {
       <button
         onClick={() => setOpen(true)}
         aria-label={TITLE[lang] || "Guides"}
-        className="fixed right-4 bottom-24 wall:bottom-4 z-30 w-14 h-14 rounded-full bg-clay-500 text-white shadow-card flex items-center justify-center text-2xl hover:bg-clay-600 active:scale-95 transition"
+        className="fixed right-4 bottom-24 wall:bottom-4 z-30 w-14 h-14 rounded-full bg-clay-500 text-white shadow-card flex items-center justify-center hover:bg-clay-600 active:scale-95 transition"
       >
-        <span aria-hidden="true">📖</span>
+        {/* Book outline — the emoji it replaced did not read as deliberate */}
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H19v16H5.5A1.5 1.5 0 0 0 4 20.5z" />
+          <path d="M4 17.5A1.5 1.5 0 0 1 5.5 16H19" />
+        </svg>
       </button>
 
       {open && (
@@ -36,8 +41,8 @@ export default function GuidesFab() {
             className="pop-in w-full sm:max-w-lg max-h-[85vh] overflow-y-auto bg-sand-50 rounded-t-3xl sm:rounded-3xl shadow-card"
           >
             <div className="sticky top-0 bg-sand-50/95 backdrop-blur-sm flex items-center justify-between px-5 py-4 border-b border-sand-200">
-              <h2 className={`text-xl text-ink-800 flex items-center gap-2 ${ur ? "font-urdu" : "font-display font-600"}`}>
-                <span aria-hidden="true">📖</span> {TITLE[lang]}
+              <h2 className={`text-xl text-ink-800 ${ur ? "font-urdu" : "font-display font-600"}`}>
+                {TITLE[lang]}
               </h2>
               <button
                 onClick={() => setOpen(false)}

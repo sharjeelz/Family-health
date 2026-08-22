@@ -51,7 +51,6 @@ export default function StudyTab() {
 
         {today !== null && !hasAny && (
           <div className="rounded-2xl border border-dashed border-sand-200 bg-sand-50 p-6 text-center">
-            <p className="text-3xl mb-2" aria-hidden="true">📚</p>
             <p className="text-sm font-700 text-ink-800">Study plan not set up yet</p>
             <p className="text-sm text-ink-700/55 mt-1 leading-snug">
               Add each child's subjects per day and this will show exactly which
@@ -67,7 +66,7 @@ export default function StudyTab() {
               return (
                 <div key={child.id}>
                   <p className="flex items-center gap-2 font-800 text-sm text-ink-800 mb-2">
-                    <Avatar photo={child.photo} pos={child.pos} emoji={child.emoji} size={34} alt={child.name} />
+                    <Avatar photo={child.photo} pos={child.pos} size={34} alt={child.name} />
                     {child.name}
                     {child.school && (
                       <span className="font-600 text-ink-700/45">· {child.school}</span>

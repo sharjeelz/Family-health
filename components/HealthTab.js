@@ -49,7 +49,6 @@ export default function HealthTab({ today }) {
 
       {/* Daily tip */}
       <div className="bg-ink-800 text-sand-50 rounded-2xl px-4 py-3 flex items-start gap-2.5">
-        <span className="text-lg shrink-0" aria-hidden="true">💡</span>
         <p
           dir={ur ? "rtl" : undefined}
           className={`text-sm leading-snug self-center ${ur ? "font-urdu leading-loose" : "font-600"}`}

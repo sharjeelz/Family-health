@@ -22,7 +22,6 @@ export default function MealTiming({ defaultOpen = false }) {
         className="w-full flex items-center justify-between p-5 sm:p-6 text-left"
       >
         <span className="flex items-center gap-3" dir={ur ? "rtl" : undefined}>
-          <span className="text-xl" aria-hidden="true">⏰</span>
           <span className={`text-2xl text-ink-800 leading-tight ${ur ? "font-urdu" : "font-display font-600"}`}>
             {t("bestTiming", lang)}
           </span>

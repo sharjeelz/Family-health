@@ -15,6 +15,9 @@ const ARABIC_CALL = {
   Isha: "حَيَّ عَلَى الصَّلَاة",
 };
 
+// How late the azaan may still fire if a tick was throttled away.
+const CATCHUP_MIN = 5;
+
 const AUTO_DISMISS_MS = 5 * 60 * 1000; // close popup after 5 min if untouched
 
 function pad(n) {
@@ -71,6 +74,9 @@ export default function AzaanManager() {
   const [enabled, setEnabled] = useState(true);
 
   const firedRef = useRef(null); // dayKey of the last prayer we fired for
+  const unlockedRef = useRef(false); // audio only ever needs unlocking once
+  const timesRef = useRef(null); // latest times, for handlers bound once at mount
+  const activeRef = useRef(null); // name of whatever last asked to play
   const dismissRef = useRef(null);
   const audioElRef = useRef(null); // one reusable <audio> element
   const ctxRef = useRef(null); // one reusable AudioContext for the chime fallback
@@ -80,27 +86,45 @@ export default function AzaanManager() {
     if (!audioElRef.current) {
       const a = new Audio("/adhan.mp3");
       a.preload = "auto";
+      // Catch-all: every actual playback is recorded, whatever started it, with
+      // whether it was muted. This is the ground truth for tracing an adhan
+      // that plays when it should not — no path can bypass it.
+      a.addEventListener("play", () => {
+        logFire(activeRef.current || "(none)", a.muted ? "element play (muted)" : "ELEMENT PLAY — AUDIBLE");
+      });
       audioElRef.current = a;
     }
     return audioElRef.current;
   }
 
   // Must run inside a user gesture the first time (browser autoplay policy).
+  //
+  // This primes the element by playing it muted and pausing straight away. Two
+  // overlapping calls used to be audible: the first call's promise would
+  // un-mute the shared element while the second call's playback was still in
+  // flight, so a tap could set the adhan off at any time of day. It now runs
+  // once, and never un-mutes anything that might still be playing.
   function unlockAudio() {
+    if (unlockedRef.current) {
+      setAudioReady(true);
+      return;
+    }
+    unlockedRef.current = true;
+    activeRef.current = "unlock";
+    logFire("unlock", "unlockAudio() — first user gesture");
     try {
       const a = getAudioEl();
       a.muted = true;
+      const settle = () => {
+        a.pause();
+        a.currentTime = 0;
+        a.muted = false;
+      };
       const p = a.play();
       if (p && p.then) {
-        p.then(() => {
-          a.pause();
-          a.currentTime = 0;
-          a.muted = false;
-        }).catch(() => {
-          a.muted = false;
-        });
+        p.then(settle).catch(settle);
       } else {
-        a.muted = false;
+        settle();
       }
     } catch {}
     try {
@@ -180,6 +204,8 @@ export default function AzaanManager() {
   }
 
   function trigger(name) {
+    activeRef.current = name;
+    logFire(name, "trigger()");
     stopAudio();
     setActive({ name, blocked: false });
     playAdhan();
@@ -189,6 +215,8 @@ export default function AzaanManager() {
 
   // Play button inside the popup — a real gesture, so this always makes sound.
   function playNow() {
+    activeRef.current = "manual";
+    logFire("manual", "playNow() — popup play button");
     unlockAudio();
     stopAudio();
     const a = getAudioEl();
@@ -201,6 +229,12 @@ export default function AzaanManager() {
   }
 
   // --- effects -------------------------------------------------------------
+  // Keep a ref in step so the mount-bound listener below can read current times
+  // without being re-registered (re-registering is what caused the tap bug).
+  useEffect(() => {
+    timesRef.current = times;
+  }, [times]);
+
   // Reflect the on/off setting (for the "enable sound" prompt).
   useEffect(() => {
     try {
@@ -218,7 +252,8 @@ export default function AzaanManager() {
     function onFirst() {
       unlockAudio();
       if (demo) {
-        const name = times ? nextPrayer(times, new Date())?.nextName || "Dhuhr" : "Dhuhr";
+        const t = timesRef.current;
+        const name = t ? nextPrayer(t, new Date())?.nextName || "Dhuhr" : "Dhuhr";
         logFire(name, "demo (?demoazaan=1)");
         trigger(name);
       }
@@ -227,7 +262,10 @@ export default function AzaanManager() {
     const evts = ["pointerdown", "touchstart", "keydown", "click"];
     evts.forEach((e) => window.addEventListener(e, onFirst, { once: true, passive: true }));
     return () => evts.forEach((e) => window.removeEventListener(e, onFirst));
-  }, [times]);
+    // Deliberately not keyed on `times`: re-arming on every refresh let the
+    // unlock run repeatedly, which is what made the adhan play on a tap.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Watch the clock and fire when a prayer minute arrives.
   useEffect(() => {
@@ -245,15 +283,18 @@ export default function AzaanManager() {
       for (const p of times) {
         const [ph, pm] = p.time.slice(0, 5).split(":").map(Number);
         if (Number.isNaN(ph) || Number.isNaN(pm)) continue;
-        // Fire within the prayer's own minute only. Comparing minutes rather
-        // than strings means a missed tick cannot shift it somewhere odd.
-        if (nowMin !== ph * 60 + pm) continue;
+        // A short catch-up window rather than an exact-minute match: a kiosk
+        // browser throttles timers when the screen dims, and a skipped tick
+        // used to mean the azaan was missed entirely. Still fires once per
+        // prayer per day — the persisted guard sees to that.
+        const lateBy = nowMin - (ph * 60 + pm);
+        if (lateBy < 0 || lateBy > CATCHUP_MIN) continue;
 
         const key = dayKey(now, p.name);
         if (firedRef.current === key || alreadyFired(key)) break;
         firedRef.current = key;
         markFired(key);
-        logFire(p.name, `scheduled ${p.time.slice(0, 5)}`);
+        logFire(p.name, `scheduled ${p.time.slice(0, 5)}${lateBy > 0 ? ` (catch-up, ${lateBy}m late)` : ""}`);
         trigger(p.name);
         break;
       }
@@ -276,7 +317,6 @@ export default function AzaanManager() {
           onClick={unlockAudio}
           className="fixed bottom-24 left-4 wall:bottom-4 wall:left-auto wall:right-24 z-30 flex items-center gap-2 rounded-full bg-ink-800 text-sand-50 shadow-card pl-3 pr-4 py-2.5 active:scale-95 transition"
         >
-          <span className="text-base" aria-hidden="true">🔔</span>
           <span className="text-xs font-800 leading-tight text-left">
             Tap to enable
             <br />
@@ -329,7 +369,7 @@ export default function AzaanManager() {
                       : "bg-white/10 text-sand-50 hover:bg-white/20"
                   }`}
                 >
-                  🔊 Play
+                  Play
                 </button>
                 <button
                   onClick={close}

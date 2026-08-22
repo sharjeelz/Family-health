@@ -20,6 +20,12 @@ const dayKey = (d) => `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 
 // Global: fires an alert (chime + banner) when a timed reminder comes due, on
 // any tab. Only tracks "fired" state (separate key) — never edits the list.
+//
+// Repeating reminders used to require an exact hh:mm match. On a wall tablet
+// the browser throttles timers whenever the screen dims or Android dozes, so a
+// skipped tick meant the reminder was missed for the day. A short catch-up
+// window covers that: still fires once, just possibly a minute or two late.
+const CATCHUP_MIN = 5;
 export default function ReminderWatcher() {
   const [toast, setToast] = useState(null); // { texts: [] }
   const timer = useRef(null);
@@ -29,7 +35,6 @@ export default function ReminderWatcher() {
       const items = loadJSON(KEY, []);
       const fired = loadJSON(FIRED, {});
       const now = new Date();
-      const hhmm = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
       const tk = dayKey(now);
       const due = [];
       let changed = false;
@@ -44,7 +49,13 @@ export default function ReminderWatcher() {
           }
         } else {
           const dayOk = r.repeat === "daily" || (r.repeat in WDAY && now.getDay() === WDAY[r.repeat]);
-          if (dayOk && r.time === hhmm && fired[r.id] !== tk) {
+          const [rh, rm] = String(r.time).split(":").map(Number);
+          const lateBy =
+            Number.isNaN(rh) || Number.isNaN(rm)
+              ? null
+              : now.getHours() * 60 + now.getMinutes() - (rh * 60 + rm);
+          const inWindow = lateBy !== null && lateBy >= 0 && lateBy <= CATCHUP_MIN;
+          if (dayOk && inWindow && fired[r.id] !== tk) {
             due.push(r);
             fired[r.id] = tk;
             changed = true;
@@ -81,7 +92,6 @@ export default function ReminderWatcher() {
         onClick={() => setToast(null)}
         className="pointer-events-auto pop-in w-full max-w-sm flex items-start gap-2.5 rounded-2xl bg-clay-600 text-sand-50 shadow-card px-4 py-3 text-left active:scale-95"
       >
-        <span className="text-lg shrink-0" aria-hidden="true">🔔</span>
         <span className="min-w-0">
           <span className="block text-[11px] font-800 uppercase tracking-wider text-sand-100/70">Reminder</span>
           {toast.texts.map((t, i) => (

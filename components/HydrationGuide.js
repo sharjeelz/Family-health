@@ -27,7 +27,6 @@ export default function HydrationGuide({ defaultOpen = false }) {
         className="w-full flex items-center justify-between p-5 sm:p-6 text-left"
       >
         <span className="flex items-center gap-3" dir={ur ? "rtl" : undefined}>
-          <span className="text-xl" aria-hidden="true">💧</span>
           <span>
             <span className={`block text-2xl text-ink-800 leading-tight ${ur ? "font-urdu" : "font-display font-600"}`}>
               {t("hydrationTitle", lang)}
@@ -75,7 +74,6 @@ export default function HydrationGuide({ defaultOpen = false }) {
           <ul className="space-y-2">
             {tips.map((tip, i) => (
               <li key={i} className={`flex gap-2 text-sm text-ink-700/80 ${ur ? "font-urdu leading-loose" : "leading-snug"}`}>
-                <span className="text-[#4A90C2] shrink-0" aria-hidden="true">💧</span>
                 <span>{tip}</span>
               </li>
             ))}

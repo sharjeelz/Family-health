@@ -6,11 +6,11 @@ import { AZAAN_ENABLED_KEY } from "./AzaanManager";
 import SurahPlayer from "./SurahPlayer";
 
 const ICONS = {
-  Fajr: "🌅",
+  Fajr: "",
   Dhuhr: "☀️",
-  Asr: "🌤️",
-  Maghrib: "🌇",
-  Isha: "🌙",
+  Asr: "",
+  Maghrib: "",
+  Isha: "",
 };
 
 function to12h(t) {
@@ -75,7 +75,7 @@ export default function NamazTab() {
       <section className="bg-white rounded-3xl shadow-card p-5 flex items-center justify-between gap-3">
         <div className="min-w-0">
           <p className="font-800 text-ink-800 text-sm flex items-center gap-2">
-            <span aria-hidden="true">🔔</span> Azaan alert
+ Azaan alert
           </p>
           <p className="text-xs text-ink-700/50 font-600 mt-0.5">
             Plays the adhan and shows a reminder at each prayer time.

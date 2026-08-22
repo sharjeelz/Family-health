@@ -112,7 +112,7 @@ export default function ChoresTab() {
     <div className="space-y-5">
       <section className="bg-white rounded-3xl shadow-card p-5 sm:p-6">
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-xl" aria-hidden="true">⭐</span>
+          <span className="text-xl" aria-hidden="true">★</span>
           <h2 className="font-display text-2xl font-600 text-ink-800">Chores &amp; stars</h2>
         </div>
         <p className="text-sm text-ink-700/55">Tick a chore to earn a star. Resets every day.</p>
@@ -126,17 +126,17 @@ export default function ChoresTab() {
           <section key={child.id} className="bg-white rounded-3xl shadow-card p-5 sm:p-6">
             <div className="flex items-center justify-between gap-2 mb-4">
               <span className="flex items-center gap-2.5 min-w-0">
-                <Avatar photo={child.photo} pos={child.pos} emoji={child.emoji} size={40} alt={child.name} />
+                <Avatar photo={child.photo} pos={child.pos} size={40} alt={child.name} />
                 <span className="min-w-0">
                   <span className="block font-800 text-ink-800">{child.name}</span>
                   <span className="block text-xs text-ink-700/50 font-600">{todayCount}/{CHORES.length} today</span>
                 </span>
                 {isLeader && (
-                  <span className="text-[11px] font-800 text-clay-600 bg-clay-400/15 px-2 py-0.5 rounded-full">🏆 top</span>
+                  <span className="text-[11px] font-800 text-clay-600 bg-clay-400/15 px-2 py-0.5 rounded-full">top</span>
                 )}
               </span>
               <span className="shrink-0 text-right">
-                <span className="block font-display text-2xl font-700 text-clay-500 leading-none">⭐ {total}</span>
+                <span className="block font-display text-2xl font-700 text-clay-500 leading-none">★ {total}</span>
                 <span className="block text-[10px] text-ink-700/50 font-700 mt-0.5">this week</span>
               </span>
             </div>
@@ -172,17 +172,17 @@ export default function ChoresTab() {
                   <div className={`rounded-2xl border p-3 mb-4 ${unlocked ? "bg-sage-500/10 border-sage-500/30" : "bg-sand-50 border-sand-200"}`}>
                     <div className="flex items-center justify-between gap-2 mb-1.5">
                       <span className="text-sm font-800 text-ink-800 min-w-0 truncate">
-                        🎁 {r.text ? r.text : <span className="text-ink-700/45 font-700">Set a reward</span>}
+                        {r.text ? r.text : <span className="text-ink-700/45 font-700">Set a reward</span>}
                       </span>
                       <span className="flex items-center gap-2 shrink-0">
-                        <span className="text-xs font-800 text-clay-600">{total}/{r.goal} ⭐</span>
+                        <span className="text-xs font-800 text-clay-600">{total}/{r.goal} ★</span>
                         <button onClick={() => startEditReward(child.id)} aria-label="Edit reward" className="text-ink-700/30 hover:text-clay-500 text-base leading-none">✎</button>
                       </span>
                     </div>
                     <div className="h-2 rounded-full bg-sand-200 overflow-hidden">
                       <div className={`h-full rounded-full transition-all duration-500 ${unlocked ? "bg-sage-500" : "bg-clay-400"}`} style={{ width: `${pct * 100}%` }} />
                     </div>
-                    {unlocked && <p className="text-xs font-800 text-sage-600 mt-1.5">🎉 Reward unlocked — great job!</p>}
+                    {unlocked && <p className="text-xs font-800 text-sage-600 mt-1.5">Reward unlocked — great job!</p>}
                   </div>
                 );
               })()

@@ -19,13 +19,13 @@ function fmtRange(start, finish, showYear) {
 // emoji + accent by rough category, from the title.
 function meta(title) {
   const t = title.toLowerCase();
-  if (/eid|hajj/.test(t)) return { emoji: "🌙", cls: "text-clay-600 bg-clay-400/15" };
-  if (/vacation|break|holiday/.test(t)) return { emoji: "🏖️", cls: "text-clay-600 bg-clay-400/15" };
-  if (/exam|pre-board|preparatory leave|result/.test(t)) return { emoji: "📝", cls: "text-clay-600 bg-clay-400/15" };
-  if (/test series/.test(t)) return { emoji: "📚", cls: "text-sage-600 bg-sage-500/12" };
-  if (/ptm/.test(t)) return { emoji: "🧑‍🏫", cls: "text-sage-600 bg-sage-500/12" };
-  if (/re-opens|classes|academic session|teachers return/.test(t)) return { emoji: "🏫", cls: "text-sage-600 bg-sage-500/12" };
-  return { emoji: "⭐", cls: "text-date-500 bg-clay-400/12" };
+  if (/eid|hajj/.test(t)) return { cls: "text-clay-600 bg-clay-400/15" };
+  if (/vacation|break|holiday/.test(t)) return { cls: "text-clay-600 bg-clay-400/15" };
+  if (/exam|pre-board|preparatory leave|result/.test(t)) return { cls: "text-clay-600 bg-clay-400/15" };
+  if (/test series/.test(t)) return { cls: "text-sage-600 bg-sage-500/12" };
+  if (/ptm/.test(t)) return { cls: "text-sage-600 bg-sage-500/12" };
+  if (/re-opens|classes|academic session|teachers return/.test(t)) return { cls: "text-sage-600 bg-sage-500/12" };
+  return { cls: "text-date-500 bg-clay-400/12" };
 }
 
 function countdown(start, finish, today) {
@@ -50,7 +50,6 @@ export default function SchoolEvents() {
   return (
     <section className="bg-white rounded-3xl shadow-card p-5 sm:p-6">
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-xl" aria-hidden="true">📅</span>
         <h2 className="font-display text-2xl font-600 text-ink-800">Upcoming events</h2>
       </div>
       <p className="text-sm text-ink-700/55 mb-4">From the school calendar (2026–27).</p>
@@ -71,7 +70,6 @@ export default function SchoolEvents() {
                   className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-lg ${m.cls}`}
                   aria-hidden="true"
                 >
-                  {m.emoji}
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="font-800 text-sm text-ink-800 leading-snug">{e.title}</p>

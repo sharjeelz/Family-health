@@ -147,7 +147,6 @@ export default function RemindersTab() {
 
         {/* optional time + repeat */}
         <div className="flex items-center gap-2 mt-2.5">
-          <span className="text-base" aria-hidden="true">⏰</span>
           <input
             type="time"
             value={time}
@@ -169,7 +168,6 @@ export default function RemindersTab() {
 
         {/* sound picker + preview (only matters for timed reminders) */}
         <div className="flex items-center gap-2 mt-2">
-          <span className="text-base" aria-hidden="true">🔊</span>
           <select
             value={sound}
             onChange={(e) => setSound(e.target.value)}
@@ -177,7 +175,7 @@ export default function RemindersTab() {
             className="flex-1 rounded-xl border border-sand-200 bg-sand-50 px-3 py-2 text-sm font-700 text-ink-800 focus:outline-none focus:border-clay-400"
           >
             {REMINDER_SOUNDS.map((s) => (
-              <option key={s.id} value={s.id}>{s.emoji} {s.label}</option>
+              <option key={s.id} value={s.id}>{s.label}</option>
             ))}
           </select>
           <button
@@ -216,7 +214,7 @@ export default function RemindersTab() {
                   <span className="block text-sm font-700 text-ink-800">{it.text}</span>
                   {scheduleLabel(it) && (
                     <span className="inline-flex items-center gap-1 text-xs font-700 text-clay-600 bg-clay-400/15 px-2 py-0.5 rounded-full mt-1">
-                      {soundById(it.sound).emoji} {scheduleLabel(it)}
+                      {scheduleLabel(it)}
                     </span>
                   )}
                 </span>

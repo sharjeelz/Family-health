@@ -58,7 +58,6 @@ export default function WaterReminder() {
         onClick={() => setToast(false)}
         className="pointer-events-auto pop-in flex items-center gap-2 rounded-full bg-[#2f6d99] text-white shadow-card pl-3 pr-4 py-2.5 active:scale-95"
       >
-        <span className="text-lg" aria-hidden="true">💧</span>
         <span className={`text-sm font-800 ${ur ? "font-urdu" : ""}`}>{t("waterToast", lang)}</span>
       </button>
     </div>

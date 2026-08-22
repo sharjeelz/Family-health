@@ -21,13 +21,13 @@ import { LanguageProvider } from "../lib/i18n";
 // Health, Study and Chores are hidden for now. Their panels below are left
 // wired up, so uncommenting a line here brings the tab straight back.
 const TABS = [
-  { id: "home", label: "Home", icon: "🏠" },
-  // { id: "health", label: "Health", icon: "🥗" },
-  { id: "deen", label: "Deen", icon: "🕌" },
-  // { id: "study", label: "Study", icon: "📚" },
-  // { id: "chores", label: "Chores", icon: "⭐" },
-  { id: "grocery", label: "Grocery", icon: "🛒" },
-  { id: "reminders", label: "Reminders", icon: "📝" },
+  { id: "home", label: "Home" },
+  // { id: "health", label: "Health" },
+  { id: "deen", label: "Deen" },
+  // { id: "study", label: "Study" },
+  // { id: "chores", label: "Chores" },
+  { id: "grocery", label: "Grocery" },
+  { id: "reminders", label: "Reminders" },
 ];
 
 // Matches the `wall` screen in tailwind.config.js. Kept in JS as well so we can
