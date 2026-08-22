@@ -1,0 +1,18 @@
+# Start with:  docker compose -f docker/connectlife/compose.yml up -d --build
+#
+# Credentials are read from the dashboard's own .env.local, so they live in one
+# place and never appear in this file or in `docker ps` output.
+services:
+  connectlife:
+    build:
+      context: ../..
+      dockerfile: docker/connectlife/Dockerfile
+    container_name: connectlife
+    restart: unless-stopped
+    env_file:
+      - ../../.env.local
+    # Bound to localhost only: the service is unauthenticated and holds a
+    # logged-in session to the ConnectLife account. Nothing else on the wifi
+    # should be able to reach it — only the dashboard on this same machine.
+    ports:
+      - "127.0.0.1:8787:8787"

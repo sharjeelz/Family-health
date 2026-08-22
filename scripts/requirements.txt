@@ -1,0 +1,2 @@
+# Python side of the Hisense/ConnectLife bridge. See scripts/connectlife_helper.py.
+connectlife

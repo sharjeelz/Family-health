@@ -6,3 +6,6 @@
 .vercel
 .env
 .env*.local
+
+# Python virtualenv for the ConnectLife bridge
+.venv/

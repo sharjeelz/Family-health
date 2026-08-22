@@ -1,143 +1,130 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  MODES,
-  FAN_SPEEDS,
-  TEMP_MIN,
-  TEMP_MAX,
-  DEFAULT_STATE,
-  isConnected,
-  fetchState,
-  pushState,
-  clampTemp,
-} from "../lib/acControl";
+import { useState } from "react";
+import { MODES, FAN_SPEEDS, pushUnit, clampTemp } from "../lib/acControl";
 
 const MODE_LABELS = { cool: "Cool", dry: "Dry", fan: "Fan", heat: "Heat", auto: "Auto" };
 const FAN_LABELS = { auto: "Auto", low: "Low", med: "Med", high: "High" };
 
-// Air-conditioner control. Until a LAN helper is configured in lib/acControl.js
-// this runs as a local preview: the controls respond so the layout can be
-// judged, but nothing is sent anywhere.
-export default function AcCard() {
-  const [state, setState] = useState(DEFAULT_STATE);
-  const [error, setError] = useState(null);
-  const connected = isConnected();
+// One air conditioner. The unit's own reported state drives everything —
+// including its temperature range, which differs between makes.
+export default function AcCard({ unit, onUpdated }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(unit.error || null);
 
-  useEffect(() => {
-    if (!connected) return;
-    let cancelled = false;
-    fetchState()
-      .then((s) => {
-        if (!cancelled && s) setState((prev) => ({ ...prev, ...s }));
-      })
-      .catch((e) => !cancelled && setError(e.message));
-    return () => {
-      cancelled = true;
-    };
-  }, [connected]);
+  const min = unit.tempMin ?? 16;
+  const max = unit.tempMax ?? 30;
+  const off = !unit.power;
+  const dead = Boolean(unit.error) || unit.online === false;
 
-  // Apply locally first so the tablet feels instant, then reconcile.
+  // Apply optimistically so the tablet feels instant, then reconcile with what
+  // the unit reports. A cloud unit takes about a second to answer.
   function update(patch) {
-    setState((prev) => ({ ...prev, ...patch }));
-    if (!connected) return;
-    pushState(patch)
-      .then((s) => s && setState((prev) => ({ ...prev, ...s })))
-      .catch((e) => setError(e.message));
+    if (dead) return;
+    onUpdated({ ...unit, ...patch });
+    setBusy(true);
+    pushUnit(unit.id, patch)
+      .then((fresh) => {
+        setError(null);
+        if (fresh) onUpdated(fresh);
+      })
+      .catch((e) => setError(e.message))
+      .finally(() => setBusy(false));
   }
-
-  const off = !state.power;
 
   return (
     <section className="bg-white rounded-3xl shadow-card p-5">
       <div className="flex items-center justify-between gap-2 mb-4">
-        <p className="text-ink-700/45 font-800 text-[0.65rem] uppercase tracking-[0.18em]">
-          Air conditioner
-        </p>
-        <button
-          onClick={() => update({ power: !state.power })}
-          aria-pressed={state.power}
-          className={`rounded-full px-4 py-1.5 font-800 text-xs tracking-wide transition-colors ${
-            state.power
-              ? "bg-clay-500 text-white"
-              : "bg-sand-100 text-ink-700/50 hover:bg-sand-200"
-          }`}
-        >
-          {state.power ? "ON" : "OFF"}
-        </button>
-      </div>
-
-      {/* Target temperature */}
-      <div className={`flex items-center justify-between gap-3 transition-opacity ${off ? "opacity-40" : ""}`}>
-        <button
-          onClick={() => update({ temp: clampTemp(state.temp - 1) })}
-          disabled={off || state.temp <= TEMP_MIN}
-          aria-label="Decrease temperature"
-          className="w-12 h-12 shrink-0 rounded-2xl bg-sand-100 text-ink-800 text-2xl font-700 leading-none hover:bg-sand-200 active:scale-95 transition disabled:opacity-40"
-        >
-          −
-        </button>
-        <div className="text-center">
-          <span className="font-display text-5xl font-700 text-ink-800 tabular-nums leading-none">
-            {state.temp}
-          </span>
-          <span className="font-display text-2xl font-700 text-ink-700/40 align-top">°C</span>
+        <div className="min-w-0">
+          <p className="text-ink-700/45 font-800 text-[0.65rem] uppercase tracking-[0.18em] truncate">
+            {unit.label}
+          </p>
+          {unit.roomTemp != null && (
+            <p className="text-ink-700/40 font-700 text-[0.65rem] mt-0.5">Room {unit.roomTemp}°</p>
+          )}
         </div>
         <button
-          onClick={() => update({ temp: clampTemp(state.temp + 1) })}
-          disabled={off || state.temp >= TEMP_MAX}
-          aria-label="Increase temperature"
-          className="w-12 h-12 shrink-0 rounded-2xl bg-sand-100 text-ink-800 text-2xl font-700 leading-none hover:bg-sand-200 active:scale-95 transition disabled:opacity-40"
+          onClick={() => update({ power: !unit.power })}
+          disabled={dead || busy}
+          aria-pressed={unit.power}
+          className={`rounded-full px-4 py-1.5 font-800 text-xs tracking-wide transition-colors disabled:opacity-40 ${
+            unit.power ? "bg-clay-500 text-white" : "bg-sand-100 text-ink-700/50 hover:bg-sand-200"
+          }`}
         >
-          +
+          {unit.power ? "ON" : "OFF"}
         </button>
       </div>
 
-      {/* Mode */}
-      <div className={`grid grid-cols-5 gap-1 mt-4 transition-opacity ${off ? "opacity-40" : ""}`}>
-        {MODES.map((m) => (
-          <button
-            key={m}
-            onClick={() => update({ mode: m })}
-            disabled={off}
-            aria-pressed={state.mode === m}
-            className={`rounded-xl py-2 font-800 text-[0.7rem] tracking-wide transition-colors ${
-              state.mode === m
-                ? "bg-ink-800 text-sand-50"
-                : "bg-sand-100 text-ink-700/50 hover:bg-sand-200"
-            }`}
-          >
-            {MODE_LABELS[m]}
-          </button>
-        ))}
-      </div>
-
-      {/* Fan speed */}
-      <div className={`grid grid-cols-4 gap-1 mt-2 transition-opacity ${off ? "opacity-40" : ""}`}>
-        {FAN_SPEEDS.map((f) => (
-          <button
-            key={f}
-            onClick={() => update({ fan: f })}
-            disabled={off}
-            aria-pressed={state.fan === f}
-            className={`rounded-xl py-2 font-700 text-[0.7rem] tracking-wide transition-colors ${
-              state.fan === f
-                ? "bg-sage-500 text-white"
-                : "bg-sand-100 text-ink-700/50 hover:bg-sand-200"
-            }`}
-          >
-            {FAN_LABELS[f]}
-          </button>
-        ))}
-      </div>
-
-      {!connected && (
-        <p className="text-ink-700/40 font-700 text-[0.65rem] mt-3 leading-relaxed">
-          Preview — no local helper configured yet. See lib/acControl.js.
+      {dead ? (
+        <p className="text-clay-600 font-700 text-[0.7rem] leading-relaxed">
+          {unit.error || "Unit is offline"}
         </p>
+      ) : (
+        <>
+          {/* Target temperature */}
+          <div className={`flex items-center justify-between gap-3 transition-opacity ${off ? "opacity-40" : ""}`}>
+            <button
+              onClick={() => update({ temp: clampTemp(unit.temp - 1, min, max) })}
+              disabled={off || busy || unit.temp <= min}
+              aria-label="Decrease temperature"
+              className="w-12 h-12 shrink-0 rounded-2xl bg-sand-100 text-ink-800 text-2xl font-700 leading-none hover:bg-sand-200 active:scale-95 transition disabled:opacity-40"
+            >
+              −
+            </button>
+            <div className="text-center">
+              <span className="font-display text-5xl font-700 text-ink-800 tabular-nums leading-none">
+                {unit.temp}
+              </span>
+              <span className="font-display text-2xl font-700 text-ink-700/40 align-top">°C</span>
+            </div>
+            <button
+              onClick={() => update({ temp: clampTemp(unit.temp + 1, min, max) })}
+              disabled={off || busy || unit.temp >= max}
+              aria-label="Increase temperature"
+              className="w-12 h-12 shrink-0 rounded-2xl bg-sand-100 text-ink-800 text-2xl font-700 leading-none hover:bg-sand-200 active:scale-95 transition disabled:opacity-40"
+            >
+              +
+            </button>
+          </div>
+
+          {/* Mode */}
+          <div className={`grid grid-cols-5 gap-1 mt-4 transition-opacity ${off ? "opacity-40" : ""}`}>
+            {MODES.map((m) => (
+              <button
+                key={m}
+                onClick={() => update({ mode: m })}
+                disabled={off || busy}
+                aria-pressed={unit.mode === m}
+                className={`rounded-xl py-2 font-800 text-[0.7rem] tracking-wide transition-colors ${
+                  unit.mode === m ? "bg-ink-800 text-sand-50" : "bg-sand-100 text-ink-700/50 hover:bg-sand-200"
+                }`}
+              >
+                {MODE_LABELS[m]}
+              </button>
+            ))}
+          </div>
+
+          {/* Fan speed */}
+          <div className={`grid grid-cols-4 gap-1 mt-2 transition-opacity ${off ? "opacity-40" : ""}`}>
+            {FAN_SPEEDS.map((f) => (
+              <button
+                key={f}
+                onClick={() => update({ fan: f })}
+                disabled={off || busy}
+                aria-pressed={unit.fan === f}
+                className={`rounded-xl py-2 font-700 text-[0.7rem] tracking-wide transition-colors ${
+                  unit.fan === f ? "bg-sage-500 text-white" : "bg-sand-100 text-ink-700/50 hover:bg-sand-200"
+                }`}
+              >
+                {FAN_LABELS[f]}
+              </button>
+            ))}
+          </div>
+        </>
       )}
-      {error && (
-        <p className="text-clay-600 font-700 text-[0.65rem] mt-3">Helper error: {error}</p>
+
+      {error && !dead && (
+        <p className="text-clay-600 font-700 text-[0.65rem] mt-3">{error}</p>
       )}
     </section>
   );

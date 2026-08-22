@@ -7,7 +7,7 @@ import TodayGlance from "./TodayGlance";
 import NextPrayerCard from "./NextPrayerCard";
 import DaylightAndOccasion from "./DaylightAndOccasion";
 import DuaCards from "./DuaCards";
-import AcCard from "./AcCard";
+import AcPanel from "./AcPanel";
 
 // The dashboard proper. The rail stays deliberately spare — clock, weather,
 // nav — and everything worth reading lives out here.
@@ -27,9 +27,9 @@ export default function HomeTab() {
         <DaylightAndOccasion />
       </div>
 
-      {/* The AC sits in a third, with the glance panel taking the rest. */}
+      {/* One card per air conditioner, with the glance panel alongside. */}
       <div className="grid gap-5 wall:grid-cols-3 rise-in" style={step(3)}>
-        <AcCard />
+        <AcPanel />
         <div className="wall:col-span-2">
           <TodayGlance />
         </div>

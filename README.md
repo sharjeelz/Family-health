@@ -69,6 +69,73 @@ MYSQL_DATABASE=family_health
 If the other laptop is off, the Study tab shows "Database unreachable" instead of
 breaking — everything else keeps working.
 
+## Air conditioners
+
+Two units, two completely different control paths:
+
+| | Lounge (Gree) | Master bedroom (Class Pro / Hisense) |
+|---|---|---|
+| Protocol | AES-encrypted JSON over UDP 7000 | ConnectLife cloud API |
+| Path | dashboard → the unit, on your wifi | dashboard → ConnectLife servers → the unit |
+| Works without internet | Yes | No |
+| Response time | Instant | About a second |
+| Config | `AC_HOST` | `CONNECTLIFE_*` |
+
+### Gree
+
+`lib/gree.js` speaks the protocol directly from the Next.js server. Set
+`AC_HOST` to the unit's address — `node scripts/find-ac.mjs` will find it — and
+`AC_LABEL` to the name on the card. Nothing else is needed.
+
+### Hisense (ConnectLife)
+
+These have no local protocol, so control goes through ConnectLife's cloud. That
+API needs a Gigya login, an OAuth2 exchange and RSA-signed requests, so instead
+of reimplementing it in JavaScript we run the maintained Python library as a
+small service (`scripts/connectlife_service.py`) and talk HTTP to it.
+
+**Your ConnectLife account must use email + password.** Accounts created with
+"Sign in with Google" cannot be used — the API has no SSO path. Either convert
+the account (app → Disconnect → Forgot password) or make a second account with a
+different email and move the unit to it.
+
+Run the bridge with Docker, so the dashboard machine needs no Python:
+
+```bash
+docker compose -f docker/connectlife/compose.yml up -d --build
+```
+
+It reads credentials from `.env.local` and binds to `127.0.0.1:8787` only — the
+service is unauthenticated and holds a logged-in session to your account, so it
+must not be reachable from the rest of the wifi.
+
+To run it without Docker instead:
+
+```bash
+python -m venv .venv
+.venv/Scripts/python.exe -m pip install -r scripts/requirements.txt
+.venv/Scripts/python.exe scripts/connectlife_service.py
+```
+
+Then in `.env.local`:
+
+```
+CONNECTLIFE_URL=http://127.0.0.1:8787
+CONNECTLIFE_LABEL=Master bedroom
+CONNECTLIFE_USERNAME=...
+CONNECTLIFE_PASSWORD=...
+```
+
+Leave `CONNECTLIFE_URL` blank and the Hisense card simply doesn't appear; the
+Gree keeps working. `.venv/` is gitignored.
+
+To see what your unit reports (useful when a button does the wrong thing —
+property codes vary by model):
+
+```bash
+.venv/Scripts/python.exe scripts/connectlife_service.py --once
+```
+
 ## Setting it up on the always-on laptop
 
 The dashboard is meant to live on the same laptop as the MySQL container
