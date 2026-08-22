@@ -7,6 +7,7 @@ import HealthTab from "../components/HealthTab";
 import NamazTab from "../components/NamazTab";
 import RemindersTab from "../components/RemindersTab";
 import StudyTab from "../components/StudyTab";
+import KitchenTab from "../components/KitchenTab";
 import ChoresTab from "../components/ChoresTab";
 import GroceryTab from "../components/GroceryTab";
 import AzaanManager from "../components/AzaanManager";
@@ -26,6 +27,7 @@ const TABS = [
   { id: "deen", label: "Deen" },
   { id: "study", label: "Study" },
   // { id: "chores", label: "Chores" },
+  { id: "kitchen", label: "MyKitchen" },
   { id: "grocery", label: "Grocery" },
   { id: "reminders", label: "Reminders" },
 ];
@@ -73,6 +75,7 @@ export default function Home() {
       {tab === "deen" && <NamazTab />}
       {tab === "study" && <StudyTab />}
       {tab === "chores" && <ChoresTab />}
+      {tab === "kitchen" && <KitchenTab />}
       {tab === "grocery" && <GroceryTab />}
       {tab === "reminders" && <RemindersTab />}
     </>
