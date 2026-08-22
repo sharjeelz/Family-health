@@ -24,6 +24,46 @@ function dayKey(d, name) {
   return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}-${name}`;
 }
 
+// Persisted so a remount cannot replay a prayer that already fired.
+const FIRED_KEY = "azaan-fired-v1";
+
+function alreadyFired(key) {
+  try {
+    return JSON.parse(window.localStorage.getItem(FIRED_KEY) || "{}")[key] === true;
+  } catch {
+    return false;
+  }
+}
+
+function markFired(key) {
+  try {
+    const all = JSON.parse(window.localStorage.getItem(FIRED_KEY) || "{}");
+    all[key] = true;
+    // Keep only today's keys so this cannot grow without bound. Derived from
+    // the clock, not from `key` — pruning against the key being written would
+    // let an off-day key wipe today's guards and allow a repeat fire.
+    const d = new Date();
+    const today = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    const pruned = Object.fromEntries(
+      Object.entries(all).filter(([k]) => k.startsWith(today))
+    );
+    window.localStorage.setItem(FIRED_KEY, JSON.stringify(pruned));
+  } catch {}
+}
+
+// A short trail of what actually fired, so an unexpected azaan can be traced
+// instead of guessed at. Read it with:
+//   JSON.parse(localStorage.getItem("azaan-log-v1"))
+const LOG_KEY = "azaan-log-v1";
+
+function logFire(name, reason) {
+  try {
+    const log = JSON.parse(window.localStorage.getItem(LOG_KEY) || "[]");
+    log.unshift({ at: new Date().toISOString(), name, reason });
+    window.localStorage.setItem(LOG_KEY, JSON.stringify(log.slice(0, 40)));
+  } catch {}
+}
+
 export default function AzaanManager() {
   const { status, times } = usePrayerTimes();
   const [active, setActive] = useState(null); // { name, blocked } while popup is up
@@ -179,6 +219,7 @@ export default function AzaanManager() {
       unlockAudio();
       if (demo) {
         const name = times ? nextPrayer(times, new Date())?.nextName || "Dhuhr" : "Dhuhr";
+        logFire(name, "demo (?demoazaan=1)");
         trigger(name);
       }
     }
@@ -200,16 +241,21 @@ export default function AzaanManager() {
       if (!on) return;
 
       const now = new Date();
-      const hhmm = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const nowMin = now.getHours() * 60 + now.getMinutes();
       for (const p of times) {
-        if (p.time.slice(0, 5) === hhmm) {
-          const key = dayKey(now, p.name);
-          if (firedRef.current !== key) {
-            firedRef.current = key;
-            trigger(p.name);
-          }
-          break;
-        }
+        const [ph, pm] = p.time.slice(0, 5).split(":").map(Number);
+        if (Number.isNaN(ph) || Number.isNaN(pm)) continue;
+        // Fire within the prayer's own minute only. Comparing minutes rather
+        // than strings means a missed tick cannot shift it somewhere odd.
+        if (nowMin !== ph * 60 + pm) continue;
+
+        const key = dayKey(now, p.name);
+        if (firedRef.current === key || alreadyFired(key)) break;
+        firedRef.current = key;
+        markFired(key);
+        logFire(p.name, `scheduled ${p.time.slice(0, 5)}`);
+        trigger(p.name);
+        break;
       }
     }
 

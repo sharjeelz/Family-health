@@ -49,7 +49,8 @@ export default function NamazTab() {
 
   return (
     <div className="space-y-5">
-      {/* Countdown card */}
+      {/* Countdown card removed — the dashboard's next-prayer widget shows
+          exactly this, so it was duplicated on every visit.
       <section className="bg-gradient-to-br from-sage-600 to-sage-500 text-white rounded-3xl shadow-card p-6 text-center">
         {status === "loading" && <p className="py-6 text-white/80">Getting prayer times…</p>}
         {status === "error" && (
@@ -67,6 +68,8 @@ export default function NamazTab() {
           </>
         )}
       </section>
+
+      */}
 
       {/* Azaan alert settings */}
       <section className="bg-white rounded-3xl shadow-card p-5 flex items-center justify-between gap-3">
@@ -95,7 +98,8 @@ export default function NamazTab() {
         </button>
       </section>
 
-      {/* All times */}
+      {/* Full timetable removed — it now lives on the dashboard's
+          next-prayer widget, which shows every prayer with its time.
       <section className="bg-white rounded-3xl shadow-card p-5 sm:p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-display text-2xl font-600 text-ink-800">Today's prayers</h2>
@@ -136,6 +140,7 @@ export default function NamazTab() {
           Times use the Umm al-Qura method. Confirm with your local masjid.
         </p>
       </section>
+      */}
 
       <SurahPlayer />
     </div>

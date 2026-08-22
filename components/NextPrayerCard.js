@@ -10,6 +10,14 @@ function to12h(hhmm) {
   return `${hour12}:${String(mm).padStart(2, "0")} ${hh < 12 ? "AM" : "PM"}`;
 }
 
+// The strip gives each prayer a fifth of the card, so the meridiem is dropped
+// there — prayer times are unambiguous by position.
+function shortTime(hhmm) {
+  const [hh, mm] = hhmm.split(":").map(Number);
+  const hour12 = ((hh + 11) % 12) + 1;
+  return `${hour12}:${String(mm).padStart(2, "0")}`;
+}
+
 function countdownLabel(next) {
   if (next.hours > 0) return `in ${next.hours}h ${next.minutes}m`;
   if (next.minutes > 0) return `in ${next.minutes} min`;
@@ -19,7 +27,7 @@ function countdownLabel(next) {
 // Next-prayer widget. Reads the same cached Umm al-Qura times as the Deen tab
 // and the azaan alert.
 export default function NextPrayerCard() {
-  const { status, times } = usePrayerTimes();
+  const { status, times, city } = usePrayerTimes();
   const [now, setNow] = useState(null);
 
   useEffect(() => {
@@ -39,9 +47,14 @@ export default function NextPrayerCard() {
 
   return (
     <section className={`bg-white rounded-3xl shadow-card p-5 ${soon ? "pulse-soon" : ""}`}>
-      <p className="text-ink-700/45 font-800 text-[0.65rem] uppercase tracking-[0.18em] mb-3 flex items-center gap-2">
-        Next prayer
-      </p>
+      <div className="flex items-baseline justify-between gap-2 mb-3">
+        <p className="text-ink-700/45 font-800 text-[0.65rem] uppercase tracking-[0.18em]">
+          Next prayer
+        </p>
+        {city && (
+          <span className="text-ink-700/40 font-600 text-[0.65rem] truncate">{city}</span>
+        )}
+      </div>
 
       {status === "loading" && !next && (
         <p className="text-ink-700/50 font-600 text-sm">Loading…</p>
@@ -62,7 +75,8 @@ export default function NextPrayerCard() {
           </div>
           <p className="text-clay-600 text-sm font-800 mt-1">{countdownLabel(next)}</p>
 
-          {/* The whole day at a glance — where we are in it, not just what's next */}
+          {/* The whole day: where we are in it, and every prayer's time. This is
+              the only place the full timetable lives now. */}
           <div className="flex items-end gap-1.5 mt-4">
             {times.map((p, i) => {
               const done = i < next.activeIndex;
@@ -81,10 +95,20 @@ export default function NextPrayerCard() {
                   >
                     {p.name.slice(0, 3)}
                   </span>
+                  <span
+                    className={`block text-[0.6rem] font-700 tabular-nums truncate ${
+                      isNext ? "text-clay-600" : done ? "text-ink-700/35" : "text-ink-700/45"
+                    }`}
+                  >
+                    {shortTime(p.time)}
+                  </span>
                 </div>
               );
             })}
           </div>
+          <p className="text-ink-700/35 text-[0.6rem] font-600 mt-3 leading-relaxed">
+            Umm al-Qura method — confirm with your local masjid.
+          </p>
         </>
       )}
     </section>
