@@ -356,21 +356,23 @@ export default function AzaanManager() {
 
               {active.blocked && (
                 <p className="text-clay-400 font-700 text-xs mt-4">
-                  Sound was blocked by the browser — tap Play.
+                  Sound was blocked by the browser.
                 </p>
               )}
 
+              {/* Play only appears when the browser actually blocked the
+                  sound. While the adhan is already playing it is a trap: it
+                  reads as "play the adhan" and starts a second one over the
+                  top of the first. Dismiss is the only thing to do then. */}
               <div className="flex items-center gap-2 mt-7">
-                <button
-                  onClick={playNow}
-                  className={`rounded-2xl font-800 px-6 py-3 text-sm active:scale-95 transition ${
-                    active.blocked
-                      ? "bg-clay-500 text-white hover:bg-clay-600"
-                      : "bg-white/10 text-sand-50 hover:bg-white/20"
-                  }`}
-                >
-                  Play
-                </button>
+                {active.blocked && (
+                  <button
+                    onClick={playNow}
+                    className="rounded-2xl bg-clay-500 text-white font-800 px-6 py-3 text-sm hover:bg-clay-600 active:scale-95 transition"
+                  >
+                    Play
+                  </button>
+                )}
                 <button
                   onClick={close}
                   className="rounded-2xl bg-sage-500 text-white font-800 px-6 py-3 text-sm hover:bg-sage-600 active:scale-95 transition"
