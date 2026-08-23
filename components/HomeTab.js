@@ -1,12 +1,11 @@
 "use client";
 
 // import FamilyPhoto from "./FamilyPhoto";   // carousel paused — see below
-import AyahCard from "./AyahCard";
-import QuoteCard from "./QuoteCard";
+import DailyWordCard from "./DailyWordCard";
 import TodayGlance from "./TodayGlance";
 import NextPrayerCard from "./NextPrayerCard";
 import DaylightAndOccasion from "./DaylightAndOccasion";
-import DuaCards from "./DuaCards";
+import SectionTitle from "./SectionTitle";
 import AcPanel from "./AcPanel";
 
 // The dashboard proper. The rail stays deliberately spare — clock, weather,
@@ -21,30 +20,24 @@ export default function HomeTab() {
       <FamilyPhoto />
       */}
 
+      <div className="rise-in">
+        <DailyWordCard />
+      </div>
+
       {/* Prayer, daylight and the next occasion — three across on a wall tablet */}
+      <SectionTitle>Today</SectionTitle>
       <div className="grid gap-5 wall:grid-cols-3 stagger">
         <NextPrayerCard />
         <DaylightAndOccasion />
       </div>
 
       {/* One card per air conditioner, with the glance panel alongside. */}
+      <SectionTitle className="pt-1">Home &amp; family</SectionTitle>
       <div className="grid gap-5 wall:grid-cols-3 rise-in" style={step(3)}>
         <AcPanel />
         <div className="wall:col-span-2">
           <TodayGlance />
         </div>
-      </div>
-
-      {/* The going-out and coming-in duas, side by side */}
-      <div className="grid gap-5 wall:grid-cols-2 stagger">
-        <DuaCards />
-      </div>
-
-      <div className="rise-in" style={step(6)}>
-        <AyahCard />
-      </div>
-      <div className="rise-in" style={step(7)}>
-        <QuoteCard />
       </div>
     </div>
   );

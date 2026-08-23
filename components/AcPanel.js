@@ -8,6 +8,35 @@ import AcCard from "./AcCard";
 // The Gree answers on the LAN in milliseconds; the Hisense goes through a
 // cloud service and takes about a second, so units arrive together but each
 // carries its own error rather than one failure blanking the panel.
+// The silhouette of an AC card: label, power pill, the big temperature, then
+// the two button rows.
+function AcSkeleton() {
+  return (
+    <section className="bg-white rounded-3xl shadow-card p-5" aria-hidden="true">
+      <div className="flex items-center justify-between gap-2 mb-4">
+        <span className="shimmer block h-3 w-24 rounded-full" />
+        <span className="shimmer block h-7 w-14 rounded-full" />
+      </div>
+      <div className="flex items-center justify-between gap-3">
+        <span className="shimmer block w-12 h-12 rounded-2xl" />
+        <span className="shimmer block h-10 w-24 rounded-xl" />
+        <span className="shimmer block w-12 h-12 rounded-2xl" />
+      </div>
+      <div className="grid grid-cols-5 gap-1 mt-4">
+        {Array.from({ length: 5 }, (_, i) => (
+          <span key={i} className="shimmer block h-8 rounded-xl" />
+        ))}
+      </div>
+      <div className="grid grid-cols-4 gap-1 mt-2">
+        {Array.from({ length: 4 }, (_, i) => (
+          <span key={i} className="shimmer block h-8 rounded-xl" />
+        ))}
+      </div>
+      <span className="sr-only">Loading air conditioners</span>
+    </section>
+  );
+}
+
 export default function AcPanel() {
   const [units, setUnits] = useState(null);
   const [error, setError] = useState(null);
@@ -48,7 +77,10 @@ export default function AcPanel() {
     );
   }
 
-  if (!units) return null;
+  // The Gree answers on the LAN in milliseconds, but the Hisense goes through
+  // a cloud service and takes about a second. Show the card's shape while we
+  // wait rather than an empty gap that reads as a broken layout.
+  if (!units) return <AcSkeleton />;
 
   return (
     <>

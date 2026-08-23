@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { usePrayerTimes, nextPrayer } from "../lib/usePrayerTimes";
 import { AZAAN_ENABLED_KEY } from "./AzaanManager";
 import SurahPlayer from "./SurahPlayer";
+import DuaCards from "./DuaCards";
+import SectionTitle from "./SectionTitle";
 
 const ICONS = {
   Fajr: "",
@@ -143,6 +145,13 @@ export default function NamazTab() {
       */}
 
       <SurahPlayer />
+
+      {/* The going-out and coming-in duas. They lived on Home; they belong
+          with the rest of the deen material, and Home was getting long. */}
+      <SectionTitle className="pt-1">Duas</SectionTitle>
+      <div className="grid gap-5 wall:grid-cols-2 stagger">
+        <DuaCards />
+      </div>
     </div>
   );
 }

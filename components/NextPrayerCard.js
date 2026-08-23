@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { usePrayerTimes, nextPrayer } from "../lib/usePrayerTimes";
+import CardMotif from "./CardMotif";
 
 // "HH:MM" (24h, as Aladhan returns it) -> "6:42 PM", to match the hero clock.
 function to12h(hhmm) {
@@ -46,7 +47,10 @@ export default function NextPrayerCard() {
   const soon = next && next.hours === 0 && next.minutes <= 15;
 
   return (
-    <section className={`bg-white rounded-3xl shadow-card p-5 ${soon ? "pulse-soon" : ""}`}>
+    <section
+      className={`relative overflow-hidden isolate bg-white rounded-3xl shadow-card p-5 ${soon ? "pulse-soon" : ""}`}
+    >
+      <CardMotif kind="prayer" />
       <div className="flex items-baseline justify-between gap-2 mb-3">
         <p className="text-ink-700/45 font-800 text-[0.65rem] uppercase tracking-[0.18em]">
           Next prayer
@@ -106,9 +110,7 @@ export default function NextPrayerCard() {
               );
             })}
           </div>
-          <p className="text-ink-700/35 text-[0.6rem] font-600 mt-3 leading-relaxed">
-            Umm al-Qura method — confirm with your local masjid.
-          </p>
+         
         </>
       )}
     </section>

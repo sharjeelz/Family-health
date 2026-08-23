@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { MODES, FAN_SPEEDS, pushUnit, clampTemp } from "../lib/acControl";
+import CardMotif from "./CardMotif";
 
 const MODE_LABELS = { cool: "Cool", dry: "Dry", fan: "Fan", heat: "Heat", auto: "Auto" };
 const FAN_LABELS = { auto: "Auto", low: "Low", med: "Med", high: "High" };
@@ -37,7 +38,8 @@ export default function AcCard({ unit, onUpdated, onReload }) {
   }
 
   return (
-    <section className="bg-white rounded-3xl shadow-card p-5">
+    <section className="relative overflow-hidden isolate bg-white rounded-3xl shadow-card p-5">
+      <CardMotif kind="cooling" />
       <div className="flex items-center justify-between gap-2 mb-4">
         <div className="min-w-0">
           <p className="text-ink-700/45 font-800 text-[0.65rem] uppercase tracking-[0.18em] truncate">
