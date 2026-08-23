@@ -1,10 +1,18 @@
 "use client";
 
+import { useState } from "react";
+
 // Circular thumbnail. If a photo is given it's cropped to a face-framed circle
 // (via object-cover + a per-photo focal point); otherwise it falls back to the
 // person's initial, which reads better than an emoji at small sizes.
+//
+// The same fallback covers a photo that is named but not actually in public/ —
+// a broken image icon on the family dashboard looks like a fault, while an
+// initial just looks deliberate.
 export default function Avatar({ photo, pos, size = 32, alt = "" }) {
-  if (!photo) {
+  const [failed, setFailed] = useState(false);
+
+  if (!photo || failed) {
     const initial = (alt || "").trim().charAt(0).toUpperCase();
     return (
       <span
@@ -25,6 +33,7 @@ export default function Avatar({ photo, pos, size = 32, alt = "" }) {
         src={photo}
         alt={alt}
         loading="lazy"
+        onError={() => setFailed(true)}
         className="w-full h-full object-cover"
         style={{ objectPosition: pos || "center" }}
       />

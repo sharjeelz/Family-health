@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import ShareList from "./ShareList";
 
 const KEY = "family-grocery-v1";
 
@@ -148,6 +149,13 @@ export default function GroceryTab() {
             List is empty. Add items above or tap a staple.
           </p>
         )}
+
+        {/* Getting the list off the tablet and into a pocket on the way out. */}
+        <ShareList
+          title="Shopping list"
+          lines={active.map((it) => it.text)}
+          disabled={active.length === 0}
+        />
 
         {active.length > 0 && (
           <ul className="mt-3 space-y-2">

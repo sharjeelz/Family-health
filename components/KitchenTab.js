@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import KitchenSearch from "./KitchenSearch";
 import { fetchJson } from "../lib/fetchJson";
+import ShareList from "./ShareList";
 
 // MyKitchen — recipes from the RecipyAI project, fetched server-side so no
 // credentials or account details reach the tablet. Two views: the library,
@@ -196,9 +197,37 @@ function RecipeView({ recipe, onBack }) {
 
   // Everything below reads from `view`, so the two languages share one layout.
   const view = showUrdu && urdu ? urdu : recipe;
+
   const ur = showUrdu && Boolean(urdu);
   const rtl = ur ? { dir: "rtl", lang: "ur" } : {};
   const urFont = ur ? "font-urdu leading-loose" : "";
+
+  // Share whatever is on screen — if someone is reading it in Urdu, that is
+  // the version worth sending. The video link goes along: a written method
+  // loses the bits you only catch by watching.
+  const shareText = [
+    view.title,
+    [
+      view.cuisine,
+      view.minutes ? `${view.minutes} min` : null,
+      view.servings ? `serves ${view.servings}` : null,
+    ]
+      .filter(Boolean)
+      .join(" · "),
+    "",
+    ur ? "اجزاء" : "Ingredients",
+    ...view.ingredients.map(
+      (i) =>
+        `• ${[i.quantity, i.unit, i.item].filter(Boolean).join(" ")}${i.notes ? ` (${i.notes})` : ""}`
+    ),
+    "",
+    ur ? "ترکیب" : "Method",
+    ...view.steps.map((s, n) => `${n + 1}. ${s.text}`),
+    ...(view.tips.length
+      ? ["", ur ? "مشورے" : "Tips", ...view.tips.map((t) => `• ${t}`)]
+      : []),
+    ...(recipe.sourceUrl ? ["", ur ? "ویڈیو" : "Video", recipe.sourceUrl] : []),
+  ].join("\n");
 
   return (
     <div className="space-y-5">
@@ -300,6 +329,16 @@ function RecipeView({ recipe, onBack }) {
           )}
         </section>
       </div>
+
+      {/* Send the recipe to whoever is actually cooking. */}
+      <section className="bg-white rounded-3xl shadow-card px-5 sm:px-6 pb-5 pt-1">
+        <ShareList
+          body={shareText}
+          // What the QR falls back to when the full recipe will not fit.
+          compact={[view.title, recipe.sourceUrl].filter(Boolean).join("\n")}
+          label="recipe"
+        />
+      </section>
     </div>
   );
 }

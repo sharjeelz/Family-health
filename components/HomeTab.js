@@ -7,6 +7,7 @@ import NextPrayerCard from "./NextPrayerCard";
 import DaylightAndOccasion from "./DaylightAndOccasion";
 import SectionTitle from "./SectionTitle";
 import AcPanel from "./AcPanel";
+import BirthdaysCard from "./BirthdaysCard";
 
 // The dashboard proper. The rail stays deliberately spare — clock, weather,
 // nav — and everything worth reading lives out here.
@@ -38,6 +39,8 @@ export default function HomeTab() {
         <div className="wall:col-span-2">
           <TodayGlance />
         </div>
+        {/* Renders nothing until birthdays are filled in (lib/birthdays.js). */}
+        <BirthdaysCard />
       </div>
     </div>
   );
