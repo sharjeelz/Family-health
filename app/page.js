@@ -29,7 +29,7 @@ const TABS = [
   { id: "study", label: "Study" },
   // { id: "chores", label: "Chores" },
   { id: "kitchen", label: "MyKitchen" },
-  { id: "cameras", label: "Cameras" },
+  { id: "cameras", label: "Cams" },
   { id: "grocery", label: "Grocery" },
   { id: "reminders", label: "Reminders" },
 ];
