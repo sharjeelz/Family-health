@@ -51,6 +51,14 @@ function useWallLayout() {
 
 export default function Home() {
   const [tab, setTab] = useState("home");
+  // Bumped on every nav tap. The panel is keyed on it, so tapping a tab —
+  // including the one already open — remounts it and it refetches. Without
+  // this you have to leave a tab and come back to see fresh data.
+  const [navCount, setNavCount] = useState(0);
+  const openTab = (id) => {
+    setTab(id);
+    setNavCount((n) => n + 1);
+  };
   const [today, setToday] = useState(null);
   const isWall = useWallLayout();
 
@@ -66,10 +74,10 @@ export default function Home() {
     } else {
       window.scrollTo(0, 0);
     }
-  }, [tab, isWall]);
+  }, [tab, navCount, isWall]);
 
   const panels = (
-    <>
+    <div key={`${tab}-${navCount}`}>
       {tab === "home" && <HomeTab />}
       {tab === "health" && today && <HealthTab today={today} />}
       {tab === "deen" && <NamazTab />}
@@ -78,7 +86,7 @@ export default function Home() {
       {tab === "kitchen" && <KitchenTab />}
       {tab === "grocery" && <GroceryTab />}
       {tab === "reminders" && <RemindersTab />}
-    </>
+    </div>
   );
 
   const overlays = (
@@ -118,7 +126,7 @@ export default function Home() {
               return (
                 <button
                   key={t.id}
-                  onClick={() => setTab(t.id)}
+                  onClick={() => openTab(t.id)}
                   aria-current={active ? "page" : undefined}
                   className={`relative w-full rounded-xl pl-4 pr-3 py-3 mt-0.5 text-left transition-colors ${
                     active
@@ -180,7 +188,7 @@ export default function Home() {
             return (
               <button
                 key={t.id}
-                onClick={() => setTab(t.id)}
+                onClick={() => openTab(t.id)}
                 aria-current={active ? "page" : undefined}
                 className="flex-1 flex flex-col items-center gap-0.5 py-2.5 sm:py-3 transition-colors"
                 title={t.label}
