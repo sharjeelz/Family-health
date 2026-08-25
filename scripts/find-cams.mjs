@@ -18,7 +18,7 @@ import os from "node:os";
 // 80/8000 web + Hikvision SDK, 554 RTSP, 34567 Dahua/XM, 8899 some clones,
 // 37777 Dahua, 443 https admin.
 const PORTS = [80, 8000, 554, 443, 8899, 34567, 37777];
-const CONNECT_TIMEOUT = 400;
+const CONNECT_TIMEOUT = 900;
 const HTTP_TIMEOUT = 2500;
 
 function subnets() {
@@ -69,6 +69,13 @@ async function identify(host, port) {
       const body = res.status === 200 ? (await res.text()).slice(0, 400) : "";
       const title = /<title[^>]*>([^<]+)/i.exec(body)?.[1]?.trim();
       const model = /<model>([^<]+)</i.exec(body)?.[1];
+      // A 200 alone means nothing — a router will happily answer any path with
+      // its own error XML. Only a real DeviceInfo document counts.
+      const isapi =
+        res.status === 401
+          ? /digest/i.test(auth)
+          : /<DeviceInfo|<deviceType|<firmwareVersion/i.test(body);
+      if (isapi && path === "/ISAPI/System/deviceInfo") notes.push("ISAPI-CONFIRMED");
       notes.push(
         [
           `${path} → ${res.status}`,
@@ -95,7 +102,7 @@ function realmOf(auth) {
 
 function guess(open, notes) {
   const text = notes.join(" ");
-  if (/ISAPI\/System\/deviceInfo → (200|401)/.test(text)) return "Hikvision / Hik-Connect (ISAPI) — this is very likely your DVR";
+  if (text.includes("ISAPI-CONFIRMED")) return "Hikvision / Hik-Connect (ISAPI) — this is very likely your DVR";
   if (/realm=(DVR|DHS|Login to)/i.test(text)) return "some DVR web login";
   if (open.includes(34567) || open.includes(37777)) return "Dahua/XM-style DVR (not ISAPI)";
   if (open.includes(554)) return "speaks RTSP — a camera or DVR";
@@ -107,11 +114,13 @@ console.log(`Scanning ${nets.map((n) => `${n}.1-254`).join(", ")} on ports ${POR
 
 for (const net3 of nets) {
   const hosts = Array.from({ length: 254 }, (_, i) => `${net3}.${i + 1}`);
-  // 254 hosts x 7 ports is 1778 sockets; do them in slices so Windows does not
-  // run out of ephemeral ports.
+  // Keep the number of sockets in flight low. An earlier version opened 32
+  // hosts x 7 ports at once and the DVR simply did not answer in time — it
+  // reported the box as absent when it was sitting there the whole while. A
+  // false negative here is worse than a slow scan.
   const found = [];
-  for (let i = 0; i < hosts.length; i += 32) {
-    const slice = hosts.slice(i, i + 32);
+  for (let i = 0; i < hosts.length; i += 8) {
+    const slice = hosts.slice(i, i + 8);
     const results = await Promise.all(
       slice.map(async (h) => {
         const open = (await Promise.all(PORTS.map(async (p) => ((await probe(h, p)) ? p : null)))).filter(Boolean);
