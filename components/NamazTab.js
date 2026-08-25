@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { usePrayerTimes, nextPrayer } from "../lib/usePrayerTimes";
 import { AZAAN_ENABLED_KEY } from "./AzaanManager";
 import SurahPlayer from "./SurahPlayer";
+import NaatPlayer from "./NaatPlayer";
 import DuaCards from "./DuaCards";
 import SectionTitle from "./SectionTitle";
 
@@ -145,6 +146,8 @@ export default function NamazTab() {
       */}
 
       <SurahPlayer />
+
+      <NaatPlayer />
 
       {/* The going-out and coming-in duas. They lived on Home; they belong
           with the rest of the deen material, and Home was getting long. */}

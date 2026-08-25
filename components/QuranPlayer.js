@@ -2,11 +2,26 @@
 
 import { createContext, useContext, useRef, useState } from "react";
 import { SURAHS, surahSrc } from "../lib/surahs";
+import { NAATS, naatSrc } from "../lib/naats";
 
 // A single, app-level audio player so recitation keeps playing when you switch
 // tabs. The <audio> element and playback state live here (mounted once at the
 // root); the Deen tab's list and the mini "now playing" bar both drive it.
+//
+// It carries naats as well as surahs. One element rather than two is the point:
+// tapping a naat while Ya-Sin is playing stops the recitation instead of laying
+// one over the other.
 const Ctx = createContext(null);
+
+// A track is either a surah or a naat. The id is unique across both lists, so
+// "which one is playing" stays a single value.
+function trackSrc(t) {
+  return t.urdu ? naatSrc(t) : surahSrc(t);
+}
+
+function findTrack(id) {
+  return SURAHS.find((x) => x.id === id) || NAATS.find((x) => x.id === id) || null;
+}
 
 export function useQuranPlayer() {
   return useContext(Ctx);
@@ -33,7 +48,7 @@ export function QuranPlayerProvider({ children }) {
     setActiveId(s.id);
     setCur(0);
     setDur(0);
-    a.src = surahSrc(s);
+    a.src = trackSrc(s);
     a.play().catch(() => {
       setMissing((m) => ({ ...m, [s.id]: true }));
       activeIdRef.current = null;
@@ -90,12 +105,13 @@ export function QuranPlayerProvider({ children }) {
   );
 }
 
-// Compact global control that appears whenever a surah is loaded.
+// Compact global control that appears whenever something is loaded.
 function NowPlaying() {
   const { activeId, playing, toggle, stop } = useQuranPlayer();
   if (!activeId) return null;
-  const s = SURAHS.find((x) => x.id === activeId);
+  const s = findTrack(activeId);
   if (!s) return null;
+  const isNaat = Boolean(s.urdu);
 
   return (
     <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-30 w-[calc(100%-2rem)] max-w-sm">
@@ -117,9 +133,12 @@ function NowPlaying() {
           )}
         </button>
         <span className="min-w-0 flex-1 text-sm font-800 truncate">
-          {s.name} <span className="text-sand-200/60 font-600">· {s.meaning}</span>
+          {isNaat ? s.title : s.name}{" "}
+          <span className="text-sand-200/60 font-600">· {isNaat ? s.by : s.meaning}</span>
         </span>
-        <span dir="rtl" lang="ar" className="font-arabic text-lg shrink-0">{s.arabic}</span>
+        <span dir="rtl" lang={isNaat ? "ur" : "ar"} className="font-arabic text-lg shrink-0">
+          {isNaat ? s.urdu : s.arabic}
+        </span>
         <button
           onClick={stop}
           aria-label="Stop"
