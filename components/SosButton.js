@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { startSiren, stopSiren } from "../lib/audio";
 
-const HOLD_MS = 2000;
+const HOLD_MS = 1000;
 
 // Reasons are optional and sent *after* the alert is already through, so they
 // cost nothing. Deliberately few and large — a frightened child should not be
@@ -14,7 +14,7 @@ const REASONS = [
   { id: "hurt", label: "I'm hurt" },
 ];
 
-// The SOS button: held for two seconds, it messages both parents' phones.
+// The SOS button: held for a second, it messages both parents' phones.
 //
 // Hold rather than tap because this is a permanently visible red button on a
 // fridge, in a house with a nursery-age child. A tap would be pressed for fun,
@@ -148,11 +148,11 @@ export default function SosButton() {
         onPointerLeave={endHold}
         onPointerCancel={endHold}
         onContextMenu={(e) => e.preventDefault()}
-        aria-label="Hold for two seconds to call Mum and Dad"
+        aria-label="Hold for one second to call Mum and Dad"
         className="fixed left-4 bottom-24 wall:bottom-4 z-30 w-16 h-16 rounded-full bg-red-600 text-white shadow-card flex items-center justify-center hover:bg-red-700 active:scale-95 transition select-none touch-none"
       >
         <span className="font-800 text-lg tracking-wide">SOS</span>
-        {/* Ring fills as they hold, so the two seconds are visible, not guessed */}
+        {/* Ring fills as they hold, so the wait is visible, not guessed */}
         {held > 0 && (
           <svg className="absolute inset-0 -rotate-90" viewBox="0 0 64 64" aria-hidden="true">
             <circle

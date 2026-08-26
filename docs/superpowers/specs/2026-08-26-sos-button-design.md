@@ -35,7 +35,7 @@ phone. The tablet does not talk to Telegram either — it calls our own
 
 ## Flow
 
-1. Child presses and holds the red SOS button for 2 seconds. A ring fills as
+1. Child presses and holds the red SOS button for 1 second. A ring fills as
    they hold. Hold rather than tap because a permanently visible red button on
    a fridge, in a house with a nursery-age child, will otherwise be pressed for
    fun — and it starts a siren.
