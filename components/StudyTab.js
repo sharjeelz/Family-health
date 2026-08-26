@@ -35,6 +35,17 @@ export default function StudyTab() {
 
   return (
     <div className="space-y-5">
+      {/* The school the tab is about. A wide lockup on white, so it sits in a
+          plain card rather than being boxed or cropped. */}
+      <section className="bg-white rounded-3xl shadow-card px-5 py-4 sm:px-6 flex justify-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/school.png"
+          alt="Al Ijadah International School"
+          className="h-12 sm:h-14 wall:h-16 w-auto object-contain"
+        />
+      </section>
+
       <section className="bg-white rounded-3xl shadow-card p-5 sm:p-6">
         <div className="flex items-center justify-between mb-1">
           <h2 className="font-display text-2xl font-600 text-ink-800">
