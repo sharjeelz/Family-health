@@ -22,7 +22,7 @@ function meta(title) {
   // Order matters: "Eid Al-Fitr Holiday" must read as a holiday, not fall
   // through to the catch-all because a later rule happened to match first.
   if (/holiday|break|vacation|eid/.test(t)) return { cls: "text-clay-600 bg-clay-400/15" };
-  if (/exam|quizz|revision|result/.test(t)) return { cls: "text-clay-600 bg-clay-400/15" };
+  if (/exam|quizz|revision|result|map test/.test(t)) return { cls: "text-clay-600 bg-clay-400/15" };
   if (/parents teacher conference/.test(t)) return { cls: "text-sage-600 bg-sage-500/12" };
   if (/semester|ay \d{4}|re-opens|classes start/.test(t)) return { cls: "text-sage-600 bg-sage-500/12" };
   return { cls: "text-date-500 bg-clay-400/12" };

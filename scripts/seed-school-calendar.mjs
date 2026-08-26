@@ -57,7 +57,7 @@ function categorise(title) {
   // Holidays first: "Eid Al-Fitr Holiday" would otherwise never be reached,
   // and an Eid break matters more than any word that follows it.
   if (/holiday|break|vacation|eid/.test(t)) return "holiday";
-  if (/exam|quizz|revision|result/.test(t)) return "exam";
+  if (/exam|quizz|revision|result|map test/.test(t)) return "exam";
   if (/parents teacher conference/.test(t)) return "ptm";
   if (/semester (begins|ends)|ay \d{4}|re-opens|classes start/.test(t)) return "term";
   return "event";
