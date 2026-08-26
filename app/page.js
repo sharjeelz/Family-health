@@ -15,6 +15,7 @@ import AzaanManager from "../components/AzaanManager";
 import KeepAwake from "../components/KeepAwake";
 import AmbientBackground from "../components/AmbientBackground";
 import GuidesFab from "../components/GuidesFab";
+import SosButton from "../components/SosButton";
 import WaterReminder from "../components/WaterReminder";
 import ReminderWatcher from "../components/ReminderWatcher";
 import { QuranPlayerProvider } from "../components/QuranPlayer";
@@ -95,6 +96,7 @@ export default function Home() {
   const overlays = (
     <>
       <GuidesFab />
+      <SosButton />
       <WaterReminder />
       <ReminderWatcher />
     </>
