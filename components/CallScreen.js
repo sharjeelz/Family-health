@@ -74,17 +74,38 @@ export default function CallScreen() {
     setError(null);
     try {
       const { default: DailyIframe } = await import("@daily-co/daily-js");
+
+      // Daily permits exactly one instance per page, and it lives outside
+      // React — a ref set to null does not dispose of it. Anything left over
+      // from a previous call has to be destroyed or createFrame throws
+      // "Duplicate DailyIframe instances are not allowed".
+      const stale = DailyIframe.getCallInstance();
+      if (stale) {
+        try {
+          await stale.destroy();
+        } catch {
+          /* already gone */
+        }
+      }
+
       const f = DailyIframe.createFrame(holder.current, {
         showLeaveButton: false, // we provide our own, large and always visible
         iframeStyle: { width: "100%", height: "100%", border: "0" },
       });
       frame.current = f;
 
-      f.on("left-meeting", () => {
+      f.on("left-meeting", async () => {
         // A drop is not the same as hanging up. If we did not ask to leave,
-        // get back in — this is the whole "nudge it to join again" behaviour,
-        // and it is only possible because the call runs inside the app.
+        // offer the way back in — this is the whole "nudge it to join again"
+        // behaviour, and it is only possible because the call runs inside the
+        // app. Destroy first: dropping the ref alone strands the instance and
+        // the next join collides with it.
         if (leaving.current) return;
+        try {
+          await f.destroy();
+        } catch {
+          /* already gone */
+        }
         frame.current = null;
         setJoined(false);
       });
@@ -94,6 +115,12 @@ export default function CallScreen() {
       setJoined(true);
     } catch (e) {
       setError(e?.message || "Could not join the call");
+      // Same trap: a failed join can still have left a frame behind.
+      try {
+        await frame.current?.destroy();
+      } catch {
+        /* already gone */
+      }
       frame.current = null;
     }
   }, [call]);
