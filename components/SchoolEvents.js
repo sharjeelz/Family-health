@@ -19,12 +19,12 @@ function fmtRange(start, finish, showYear) {
 // emoji + accent by rough category, from the title.
 function meta(title) {
   const t = title.toLowerCase();
-  if (/eid|hajj/.test(t)) return { cls: "text-clay-600 bg-clay-400/15" };
-  if (/vacation|break|holiday/.test(t)) return { cls: "text-clay-600 bg-clay-400/15" };
-  if (/exam|pre-board|preparatory leave|result/.test(t)) return { cls: "text-clay-600 bg-clay-400/15" };
-  if (/test series/.test(t)) return { cls: "text-sage-600 bg-sage-500/12" };
-  if (/ptm/.test(t)) return { cls: "text-sage-600 bg-sage-500/12" };
-  if (/re-opens|classes|academic session|teachers return/.test(t)) return { cls: "text-sage-600 bg-sage-500/12" };
+  // Order matters: "Eid Al-Fitr Holiday" must read as a holiday, not fall
+  // through to the catch-all because a later rule happened to match first.
+  if (/holiday|break|vacation|eid/.test(t)) return { cls: "text-clay-600 bg-clay-400/15" };
+  if (/exam|quizz|revision|result/.test(t)) return { cls: "text-clay-600 bg-clay-400/15" };
+  if (/parents teacher conference/.test(t)) return { cls: "text-sage-600 bg-sage-500/12" };
+  if (/semester|ay \d{4}|re-opens|classes start/.test(t)) return { cls: "text-sage-600 bg-sage-500/12" };
   return { cls: "text-date-500 bg-clay-400/12" };
 }
 

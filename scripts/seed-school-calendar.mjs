@@ -38,10 +38,12 @@ await c.query(`CREATE TABLE IF NOT EXISTS school_calendar (
 // Rough bucketing so the UI can colour-code without parsing titles at render time.
 function categorise(title) {
   const t = title.toLowerCase();
-  if (/exam|test series|pre-board|result/.test(t)) return "exam";
-  if (/vacation|break|holiday|eid|hajj/.test(t)) return "holiday";
-  if (/ptm/.test(t)) return "ptm";
-  if (/re-opens|classes start|session begins|teachers return/.test(t)) return "term";
+  // Holidays first: "Eid Al-Fitr Holiday" would otherwise never be reached,
+  // and an Eid break matters more than any word that follows it.
+  if (/holiday|break|vacation|eid/.test(t)) return "holiday";
+  if (/exam|quizz|revision|result/.test(t)) return "exam";
+  if (/parents teacher conference/.test(t)) return "ptm";
+  if (/semester (begins|ends)|ay \d{4}|re-opens|classes start/.test(t)) return "term";
   return "event";
 }
 
