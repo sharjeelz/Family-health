@@ -44,7 +44,10 @@ export default function SchoolEvents() {
   }, []);
 
   if (!today) return null;
-  const events = upcomingEvents(today, 5);
+  // Fifteen rather than five. The new calendar carries activities as well as
+  // term dates, so a short list would stop somewhere in the middle of next
+  // week and hide the things worth planning around.
+  const events = upcomingEvents(today, 15);
   const thisYear = today.getFullYear();
 
   return (

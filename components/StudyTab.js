@@ -9,6 +9,13 @@ import Syllabus from "./Syllabus";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
+// Both are Pakistan International's data, and the children move to Al Ijadah in
+// September. Hidden rather than deleted: the sections work fine, they are just
+// showing the wrong school. Flip these back on once the new timetable and
+// syllabus exist, and update lib/plan.js (STUDY) and lib/syllabusData.js.
+const SHOW_TIMETABLE = false;
+const SHOW_SYLLABUS = false;
+
 export default function StudyTab() {
   const [today, setToday] = useState(null);
   useEffect(() => {
@@ -46,6 +53,7 @@ export default function StudyTab() {
         />
       </section>
 
+      {SHOW_TIMETABLE && (
       <section className="bg-white rounded-3xl shadow-card p-5 sm:p-6">
         <div className="flex items-center justify-between mb-1">
           <h2 className="font-display text-2xl font-600 text-ink-800">
@@ -110,9 +118,11 @@ export default function StudyTab() {
         )}
       </section>
 
+      )}
+
       <SchoolEvents />
       <SchoolCalendarTable />
-      <Syllabus />
+      {SHOW_SYLLABUS && <Syllabus />}
     </div>
   );
 }
