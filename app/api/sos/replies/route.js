@@ -1,5 +1,5 @@
-import { pollMessages } from "../../../../lib/telegram";
-import { record, current, isLive } from "../../../../lib/sosSession";
+import { drain } from "../../../../lib/telegramPoller";
+import { current, isLive } from "../../../../lib/sosSession";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +10,7 @@ export async function GET() {
   if (!isLive()) return Response.json({ live: false, replies: [] });
 
   try {
-    record(await pollMessages());
+    await drain();
   } catch (err) {
     // Telegram unreachable this second. Return what we already have rather
     // than blanking the screen a child is reading — but say so in the log,
