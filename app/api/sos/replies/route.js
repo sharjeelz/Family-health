@@ -11,9 +11,12 @@ export async function GET() {
 
   try {
     record(await pollMessages());
-  } catch {
+  } catch (err) {
     // Telegram unreachable this second. Return what we already have rather
-    // than blanking the screen a child is reading.
+    // than blanking the screen a child is reading — but say so in the log,
+    // because a silently swallowed error here is invisible and this path is
+    // the whole feature.
+    console.log("[sos/replies] poll failed:", err.message);
   }
 
   const { startedAt, replies } = current();

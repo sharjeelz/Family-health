@@ -201,13 +201,17 @@ export default function SosButton() {
                 {/* What they say back. One-way on purpose — a frightened child
                     should not be made to type. */}
                 {replies.length > 0 && (
-                  <div className="mt-6 text-left space-y-2 max-h-56 overflow-y-auto">
-                    {replies.map((r, i) => (
-                      <div key={i} className="rounded-2xl bg-sage-500/10 border border-sage-500/25 px-4 py-3">
-                        <p className="text-xs font-800 text-sage-600 uppercase tracking-wider">
+                  <div className="mt-6 text-left space-y-3">
+                    {/* Only the two most recent, and large. A child reading this
+                        should not have to scroll to find what was just said. */}
+                    {replies.slice(-2).map((r, i) => (
+                      <div key={i} className="rounded-2xl bg-sage-500/10 border border-sage-500/25 px-4 py-4">
+                        <p className="text-sm font-800 text-sage-600 uppercase tracking-wider">
                           {r.name}
                         </p>
-                        <p className="text-ink-800 font-600 mt-0.5 break-words">{r.text}</p>
+                        <p className="text-ink-800 font-700 text-2xl leading-snug mt-1 break-words">
+                          {r.text}
+                        </p>
                       </div>
                     ))}
                   </div>
