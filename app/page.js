@@ -10,7 +10,6 @@ import StudyTab from "../components/StudyTab";
 import KitchenTab from "../components/KitchenTab";
 import CamerasTab from "../components/CamerasTab";
 import ChoresTab from "../components/ChoresTab";
-import GroceryTab from "../components/GroceryTab";
 import AzaanManager from "../components/AzaanManager";
 import KeepAwake from "../components/KeepAwake";
 import AmbientBackground from "../components/AmbientBackground";
@@ -27,12 +26,11 @@ import { LanguageProvider } from "../lib/i18n";
 const TABS = [
   { id: "home", label: "Home" },
   // { id: "health", label: "Health" },
-  { id: "deen", label: "Deen" },
-  { id: "study", label: "Study" },
+  { id: "deen", label: "Faith" },
+  { id: "study", label: "School" },
   // { id: "chores", label: "Chores" },
-  { id: "kitchen", label: "MyKitchen" },
+  { id: "kitchen", label: "Kitchen" },
   { id: "cameras", label: "Cams" },
-  { id: "grocery", label: "Grocery" },
   { id: "reminders", label: "Reminders" },
 ];
 
@@ -89,7 +87,6 @@ export default function Home() {
       {tab === "chores" && <ChoresTab />}
       {tab === "kitchen" && <KitchenTab />}
       {tab === "cameras" && <CamerasTab />}
-      {tab === "grocery" && <GroceryTab />}
       {tab === "reminders" && <RemindersTab />}
     </div>
   );

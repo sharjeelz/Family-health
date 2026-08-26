@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import GroceryTab from "./GroceryTab";
 import KitchenSearch from "./KitchenSearch";
 import { fetchJson } from "../lib/fetchJson";
 import ShareList from "./ShareList";
@@ -12,6 +13,9 @@ export default function KitchenTab() {
   const [state, setState] = useState({ status: "loading" });
   const [recipe, setRecipe] = useState(null);
   const [loadingId, setLoadingId] = useState(null);
+  // Grocery lives here rather than in the main tab bar: cooking and shopping
+  // belong together, and it keeps the bar short enough to read on the wall.
+  const [sub, setSub] = useState("recipes");
 
   useEffect(() => {
     let alive = true;
@@ -39,8 +43,33 @@ export default function KitchenTab() {
 
   return (
     <div className="space-y-5">
-      {state.status !== "unconfigured" && <KitchenSearch onOpenRecipe={open} />}
+      <div className="flex gap-1 bg-sand-200 rounded-2xl p-1 border border-sand-200">
+        {[
+          ["recipes", "Recipes"],
+          ["grocery", "Grocery"],
+        ].map(([id, label]) => (
+          <button
+            key={id}
+            onClick={() => setSub(id)}
+            aria-current={sub === id ? "page" : undefined}
+            className={`flex-1 rounded-xl px-4 py-2.5 font-800 text-sm transition ${
+              sub === id
+                ? "bg-white text-ink-800 shadow-card"
+                : "text-ink-700/70 hover:bg-white/50 hover:text-ink-800"
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
 
+      {sub === "grocery" && <GroceryTab />}
+
+      {sub === "recipes" && state.status !== "unconfigured" && (
+        <KitchenSearch onOpenRecipe={open} />
+      )}
+
+      {sub === "recipes" && (
       <section className="bg-white rounded-3xl shadow-card p-5 sm:p-6">
         <h2 className="font-display text-2xl font-600 text-ink-800 mb-1">My kitchen</h2>
         <p className="text-sm text-ink-700/55 mb-4">Recipes saved in RecipyAI.</p>
@@ -95,6 +124,7 @@ export default function KitchenTab() {
           </ul>
         )}
       </section>
+      )}
     </div>
   );
 }
