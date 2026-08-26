@@ -1,5 +1,6 @@
 import { sendMessage, sendPhoto, isConfigured } from "../../../lib/telegram";
 import { snapshot, isEnabled } from "../../../lib/nvr";
+import { begin, end } from "../../../lib/sosSession";
 
 export const dynamic = "force-dynamic";
 
@@ -87,10 +88,19 @@ export async function POST(req) {
     ? `<b>${REASONS[reason]}</b> — from home, ${clockKSA()}`
     : `\u{1F6A8} <b>SOS from home</b> — ${clockKSA()}`;
 
+  // Open the reply session before sending. Anything Telegram had queued from
+  // before this moment is filtered out by timestamp in lib/sosSession.js,
+  // rather than by draining the queue first — draining would cost a round trip
+  // on the one path that must not be delayed.
+  if (!reason) begin();
+
   try {
     await deliver(text);
   } catch (err) {
-    if (!reason) lastAlert = 0; // it never went; do not rate-limit the retry
+    if (!reason) {
+      lastAlert = 0; // it never went; do not rate-limit the retry
+      end(); // nothing was raised, so there is nothing to reply to
+    }
     return Response.json({ sent: false, error: err.message }, { status: 502 });
   }
 
@@ -108,4 +118,11 @@ export async function POST(req) {
   }
 
   return Response.json({ sent: true });
+}
+
+// The child closed the popup. Stop the reply session so nothing keeps polling
+// and a later message cannot surface out of context.
+export async function DELETE() {
+  end();
+  return Response.json({ ok: true });
 }

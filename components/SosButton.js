@@ -26,6 +26,8 @@ export default function SosButton() {
   const [sirenOn, setSirenOn] = useState(false);
   const [reasonSent, setReasonSent] = useState(null);
   const [contacts, setContacts] = useState({ mom: null, dad: null });
+  const [replies, setReplies] = useState([]);
+  const [waited, setWaited] = useState(0); // seconds since the alert went
   const raf = useRef(null);
   const start = useRef(0);
 
@@ -39,6 +41,30 @@ export default function SosButton() {
       .then((d) => setContacts({ mom: d.mom, dad: d.dad }))
       .catch(() => {});
   }, []);
+
+  // Poll for what Ammi and Abu say back, but only while the popup is open.
+  // Nothing runs in the background for the rest of the day.
+  useEffect(() => {
+    if (state !== "sent") return;
+    let alive = true;
+    const tick = async () => {
+      try {
+        const r = await fetch("/api/sos/replies");
+        const d = await r.json();
+        if (alive && d.replies) setReplies(d.replies);
+      } catch {
+        /* a missed poll is not worth showing an error for */
+      }
+    };
+    tick();
+    const iv = setInterval(tick, 3000);
+    const clock = setInterval(() => setWaited((w) => w + 1), 1000);
+    return () => {
+      alive = false;
+      clearInterval(iv);
+      clearInterval(clock);
+    };
+  }, [state]);
 
   const send = useCallback(async (reason) => {
     if (!reason) setState("sending");
@@ -100,7 +126,16 @@ export default function SosButton() {
     hush();
     setState(null);
     setReasonSent(null);
+    setReplies([]);
+    setWaited(0);
+    fetch("/api/sos", { method: "DELETE" }).catch(() => {});
   }
+
+  // Stay open until they have actually heard something back — but never trap a
+  // child in a screen they cannot dismiss. If no reply comes within two
+  // minutes (phone on silent, no signal), Close returns on its own. A failed
+  // send is always closable: there is nothing to wait for.
+  const canClose = state !== "sent" || replies.length > 0 || waited >= 120;
 
   const R = 26;
   const C = 2 * Math.PI * R;
@@ -162,6 +197,21 @@ export default function SosButton() {
                 ) : (
                   <p className="mt-6 font-700 text-sage-600">Told them. Nothing else to do.</p>
                 )}
+
+                {/* What they say back. One-way on purpose — a frightened child
+                    should not be made to type. */}
+                {replies.length > 0 && (
+                  <div className="mt-6 text-left space-y-2 max-h-56 overflow-y-auto">
+                    {replies.map((r, i) => (
+                      <div key={i} className="rounded-2xl bg-sage-500/10 border border-sage-500/25 px-4 py-3">
+                        <p className="text-xs font-800 text-sage-600 uppercase tracking-wider">
+                          {r.name}
+                        </p>
+                        <p className="text-ink-800 font-600 mt-0.5 break-words">{r.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </>
             )}
 
@@ -205,12 +255,18 @@ export default function SosButton() {
                   Stop siren
                 </button>
               )}
-              <button
-                onClick={dismiss}
-                className="flex-1 rounded-2xl bg-sand-200 text-ink-800 px-4 py-3 font-800 active:scale-[0.98] transition"
-              >
-                Close
-              </button>
+              {canClose ? (
+                <button
+                  onClick={dismiss}
+                  className="flex-1 rounded-2xl bg-sand-200 text-ink-800 px-4 py-3 font-800 active:scale-[0.98] transition"
+                >
+                  Close
+                </button>
+              ) : (
+                <p className="flex-1 self-center text-sm font-700 text-ink-700/50">
+                  Waiting for Ammi and Abu…
+                </p>
+              )}
             </div>
           </div>
         </div>
