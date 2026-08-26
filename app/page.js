@@ -194,13 +194,18 @@ export default function Home() {
                 key={t.id}
                 onClick={() => openTab(t.id)}
                 aria-current={active ? "page" : undefined}
-                className="flex-1 flex flex-col items-center gap-0.5 py-2.5 sm:py-3 transition-colors"
+                className="flex-1 min-w-0 flex flex-col items-center gap-1 py-3 transition-colors"
                 title={t.label}
               >
-                <span className={`text-lg sm:text-xl transition-transform ${active ? "scale-110" : "opacity-50"}`} aria-hidden="true">
-                  {t.icon}
-                </span>
-                <span className={`hidden sm:block text-xs font-800 ${active ? "text-clay-600" : "text-ink-700/45"}`}>
+                {/* The label is the whole button. There used to be an emoji
+                    above it and the label only appeared from sm up; when the
+                    emoji were removed app-wide the label stayed hidden, which
+                    left a bar of blank buttons on a phone held upright. */}
+                <span
+                  className={`w-full truncate text-center text-[10px] sm:text-xs font-800 ${
+                    active ? "text-clay-600" : "text-ink-700/45"
+                  }`}
+                >
                   {t.label}
                 </span>
                 <span className={`h-0.5 w-6 rounded-full mt-0.5 ${active ? "bg-clay-500" : "bg-transparent"}`} />
