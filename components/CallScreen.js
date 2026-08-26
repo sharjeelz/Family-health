@@ -5,6 +5,11 @@ import { startRing, stopRing } from "../lib/audio";
 
 const POLL_MS = 4000;
 
+// Matches the server's ceiling. Belt and braces on purpose: if the tablet
+// loses touch with the server it must still hang itself up rather than sit
+// there connected and billing.
+const MAX_CALL_MS = 45 * 60 * 1000;
+
 // The children seeing and talking to us while we are out.
 //
 // We start a call by sending /call to the family group; the dashboard notices,
@@ -49,6 +54,14 @@ export default function CallScreen() {
     else stopRing();
     return () => stopRing();
   }, [ringing]);
+
+  // Hang up regardless once the ceiling is reached — see lib/callSession.js.
+  useEffect(() => {
+    if (!joined) return;
+    const t = setTimeout(() => leave(true), MAX_CALL_MS);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [joined]);
 
   // If the parents end the call from their side, take the tablet out of it.
   useEffect(() => {
