@@ -19,6 +19,7 @@ const MAX_CALL_MS = 45 * 60 * 1000;
 export default function CallScreen() {
   const [call, setCall] = useState(null); // { url, token, startedAt }
   const [joined, setJoined] = useState(false);
+  const [connecting, setConnecting] = useState(false);
   const [dismissed, setDismissed] = useState(0); // startedAt of a call they waved away
   const [error, setError] = useState(null);
   const holder = useRef(null);
@@ -47,7 +48,12 @@ export default function CallScreen() {
     };
   }, []);
 
-  const ringing = Boolean(call) && !joined && dismissed !== call?.startedAt;
+  // Not while connecting: Daily's own prejoin screen renders inside the
+  // holder, and if the ringing overlay is still covering it — or worse, the
+  // holder is still hidden — nobody can press the button that finishes the
+  // join, and it waits forever having just asked for the camera.
+  const ringing =
+    Boolean(call) && !joined && !connecting && dismissed !== call?.startedAt;
 
   useEffect(() => {
     if (ringing) startRing();
@@ -72,6 +78,7 @@ export default function CallScreen() {
   const join = useCallback(async () => {
     if (!call || frame.current) return;
     setError(null);
+    setConnecting(true);
     try {
       const { default: DailyIframe } = await import("@daily-co/daily-js");
 
@@ -122,6 +129,8 @@ export default function CallScreen() {
         /* already gone */
       }
       frame.current = null;
+    } finally {
+      setConnecting(false);
     }
   }, [call]);
 
@@ -152,7 +161,13 @@ export default function CallScreen() {
   return (
     <div className="fixed inset-0 z-[60] bg-ink-900">
       {/* The call itself lives here; kept mounted so a rejoin is instant. */}
-      <div ref={holder} className={`w-full h-full ${joined ? "" : "hidden"}`} />
+      <div ref={holder} className={`w-full h-full ${joined || connecting ? "" : "hidden"}`} />
+
+      {connecting && !joined && (
+        <p className="absolute top-4 left-1/2 -translate-x-1/2 text-sand-50 font-700 pointer-events-none">
+          Connecting…
+        </p>
+      )}
 
       {joined && (
         <button
@@ -193,7 +208,7 @@ export default function CallScreen() {
       )}
 
       {/* Dropped mid-call: back to the ringing screen rather than a dead end. */}
-      {!joined && !ringing && call && (
+      {!joined && !ringing && !connecting && call && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-sand-50 p-8 text-center">
           <p className="font-display text-3xl text-ink-800 font-600">The call stopped</p>
           <button
