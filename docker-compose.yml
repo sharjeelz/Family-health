@@ -1,0 +1,49 @@
+# Local MySQL for the dashboard.
+#
+# The school calendar used to live on another machine on the LAN, which turned
+# out not to stay awake — the tab would show nothing whenever that laptop
+# slept. This keeps the database on the same machine that serves the dashboard,
+# so the two cannot get separated.
+#
+#   docker compose up -d
+#   node scripts/seed-school-calendar.mjs
+#
+# Bound to 127.0.0.1 on purpose: nothing on the network can reach it, only this
+# machine. Port 3310 because a WAMP MySQL already holds 3306.
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: family-health-mysql
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3310:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: family-local
+      MYSQL_DATABASE: family_health
+      MYSQL_USER: family
+      MYSQL_PASSWORD: family-local
+    volumes:
+      - mysqldata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-ufamily", "-pfamily-local"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  connectlife:
+    build:
+      context: .
+      dockerfile: docker/connectlife.Dockerfile
+    container_name: family-health-connectlife
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8787:8787"
+    # The service needs the ConnectLife login. Reading .env.local hands the
+    # container everything in that file, which is more than it needs — but it
+    # keeps credentials out of this file, which is committed to a public repo.
+    env_file:
+      - .env.local
+
+volumes:
+  mysqldata:
