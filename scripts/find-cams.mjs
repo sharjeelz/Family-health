@@ -14,6 +14,36 @@
 
 import net from "node:net";
 import os from "node:os";
+import { execSync } from "node:child_process";
+
+// Hikvision's registered MAC prefixes. A recorder answers to its MAC whatever
+// address DHCP has given it, and whatever ports happen to be open — which is
+// why this runs before the port scan. The scan below once failed to find a
+// recorder that had simply moved from .20 to .28; the ARP table found it
+// immediately.
+const HIK_OUI = [
+  "54:8c:81", "44:19:b7", "bc:ad:28", "c0:56:e3", "4c:bd:8f",
+  "a4:14:37", "28:57:be", "e0:ca:3c", "18:68:cb", "8c:e7:48",
+];
+
+function arpLook() {
+  let out = "";
+  try {
+    out = execSync("arp -a", { encoding: "utf8", timeout: 10000 });
+  } catch {
+    return []; // no arp on this platform — fall through to the port scan
+  }
+  const LINE = /(\d+\.\d+\.\d+\.\d+)\s+([0-9a-f]{2}(?:[-:][0-9a-f]{2}){5})/i;
+  const found = [];
+  for (const line of out.split(/\r?\n/)) {
+    const m = LINE.exec(line);
+    if (!m) continue;
+    const mac = m[2].toLowerCase().replace(/-/g, ":");
+    if (HIK_OUI.some((p) => mac.startsWith(p))) found.push({ host: m[1], mac });
+  }
+  return found;
+}
+
 
 // 80/8000 web + Hikvision SDK, 554 RTSP, 34567 Dahua/XM, 8899 some clones,
 // 37777 Dahua, 443 https admin.
@@ -107,6 +137,19 @@ function guess(open, notes) {
   if (open.includes(34567) || open.includes(37777)) return "Dahua/XM-style DVR (not ISAPI)";
   if (open.includes(554)) return "speaks RTSP — a camera or DVR";
   return null;
+}
+
+// Look the recorder up by MAC first. It answers to that whatever address DHCP
+// has handed it, so this finds a box that has simply moved — which the port
+// scan below, for all its care, has already failed to do once.
+const byMac = arpLook();
+if (byMac.length) {
+  console.log("Hikvision hardware in the ARP table:\n");
+  for (const { host, mac } of byMac) console.log(`  ${host}   ${mac}   <- set NVR_HOST to this`);
+  console.log("\nARP lists only machines this one has spoken to recently, so the");
+  console.log("scan below still runs in case the recorder is not in it yet.\n");
+} else {
+  console.log("No Hikvision MAC in the ARP table — scanning.\n");
 }
 
 const nets = subnets();
