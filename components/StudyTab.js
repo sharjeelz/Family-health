@@ -41,7 +41,11 @@ export default function StudyTab() {
   const isTomorrow = target !== null && target === (today + 1) % 7;
 
   return (
-    <div className="space-y-5">
+    /* Two columns on the wall display, stacked on a phone: everything the
+       school gives us down the left, the family's own photographs beside it
+       and level with the top, where they are worth looking at. */
+    <div className="grid gap-5 wall:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] wall:items-start">
+      <div className="space-y-5 min-w-0">
       {/* The school the tab is about. A wide lockup on white, so it sits in a
           plain card rather than being boxed or cropped. */}
       <section className="bg-white rounded-3xl shadow-card px-5 py-4 sm:px-6 flex justify-center">
@@ -113,17 +117,13 @@ export default function StudyTab() {
 
       )}
 
-      {/* Two columns on the wall display, stacked on a phone: the school's own
-          material on the left, the family's photographs beside it. */}
-      <div className="grid gap-5 wall:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] wall:items-start">
-        <div className="space-y-5 min-w-0">
-          <SchoolEvents />
-          <SchoolCalendarTable />
-          {SHOW_SYLLABUS && <Syllabus />}
-        </div>
-        <div className="min-w-0">
-          <Memories />
-        </div>
+        <SchoolEvents />
+        <SchoolCalendarTable />
+        {SHOW_SYLLABUS && <Syllabus />}
+      </div>
+
+      <div className="min-w-0">
+        <Memories />
       </div>
     </div>
   );
