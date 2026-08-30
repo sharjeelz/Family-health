@@ -9,11 +9,10 @@ import Syllabus from "./Syllabus";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-// Both are Pakistan International's data, and the children move to Al Ijadah in
-// September. Hidden rather than deleted: the sections work fine, they are just
-// showing the wrong school. Flip these back on once the new timetable and
-// syllabus exist, and update lib/plan.js (STUDY) and lib/syllabusData.js.
-const SHOW_TIMETABLE = false;
+// The timetable is Al Ijadah's now. The syllabus is still Pakistan
+// International's and stays hidden until the new school publishes one — if it
+// ever does; many schools post homework to a portal instead.
+const SHOW_TIMETABLE = true;
 const SHOW_SYLLABUS = false;
 
 export default function StudyTab() {

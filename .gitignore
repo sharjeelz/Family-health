@@ -9,3 +9,8 @@
 
 # Python virtualenv for the ConnectLife bridge
 .venv/
+
+certificates
+# Local development CA — belongs on your devices, not in a public repo.
+public/rootCA.crt
+certificates/
