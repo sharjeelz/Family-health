@@ -44,7 +44,10 @@ export default function Memories() {
       </p>
 
       <div className="flex gap-1 bg-sand-200 rounded-2xl p-1 border border-sand-200 mb-4">
-        {[["all", "Both"], ...CHILDREN.map((c) => [c.id, c.name])].map(([id, label]) => (
+        {/* "All", not "Both": this shows everything, including photographs of
+            one child. Labelled "Both" it read as "photographs of both of
+            them", which made a picture of Zohaib look wrongly filed. */}
+        {[["all", "All"], ...CHILDREN.map((c) => [c.id, c.name])].map(([id, label]) => (
           <button
             key={id}
             onClick={() => setWho(id)}
