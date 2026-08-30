@@ -5,6 +5,11 @@ import { startSiren, stopSiren } from "../lib/audio";
 
 const HOLD_MS = 1000;
 
+// A spoken message can run this long before it stops itself. Long enough to
+// say what is wrong, short enough that a button left pressed under a cushion
+// does not record the afternoon.
+const MAX_TALK_MS = 30_000;
+
 // Reasons are optional and sent *after* the alert is already through, so they
 // cost nothing. Deliberately few and large — a frightened child should not be
 // reading a menu.
@@ -26,6 +31,11 @@ export default function SosButton() {
   const [sirenOn, setSirenOn] = useState(false);
   const [reasonSent, setReasonSent] = useState(null);
   const [contacts, setContacts] = useState({ mom: null, dad: null });
+  const [talking, setTalking] = useState(false);
+  const [spoke, setSpoke] = useState(null); // "sent" | "failed"
+  const rec = useRef(null);
+  const chunks = useRef([]);
+  const talkTimer = useRef(null);
   const [replies, setReplies] = useState([]);
   const [waited, setWaited] = useState(0); // seconds since the alert went
   const raf = useRef(null);
@@ -122,12 +132,65 @@ export default function SosButton() {
     setSirenOn(false);
   }
 
+  // Hold to talk. The three buttons cover the usual cases; this is for
+  // everything else, and it is spoken rather than typed because Zainab cannot
+  // type and nobody types well when they are frightened.
+  async function startTalking() {
+    if (talking || rec.current) return;
+    setSpoke(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Telegram wants OGG/Opus for a true voice note. Take it if the browser
+      // can, and fall back to WebM, which is sent as an audio file instead.
+      const type = ["audio/ogg;codecs=opus", "audio/webm;codecs=opus", "audio/webm"].find(
+        (t) => window.MediaRecorder?.isTypeSupported?.(t),
+      );
+      const r = new MediaRecorder(stream, type ? { mimeType: type } : undefined);
+      chunks.current = [];
+      r.ondataavailable = (e) => e.data?.size && chunks.current.push(e.data);
+      r.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop());
+        const blob = new Blob(chunks.current, { type: r.mimeType });
+        rec.current = null;
+        setTalking(false);
+        if (blob.size < 1200) return; // a stray tap, not a message
+        try {
+          const res = await fetch("/api/sos/voice", {
+            method: "POST",
+            headers: { "Content-Type": r.mimeType },
+            body: blob,
+          });
+          const d = await res.json().catch(() => ({}));
+          setSpoke(d.sent ? "sent" : "failed");
+        } catch {
+          setSpoke("failed");
+        }
+      };
+      rec.current = r;
+      r.start();
+      setTalking(true);
+      talkTimer.current = setTimeout(stopTalking, MAX_TALK_MS);
+    } catch {
+      // Usually no microphone permission, or a page not served over HTTPS.
+      setSpoke("failed");
+      setTalking(false);
+    }
+  }
+
+  function stopTalking() {
+    clearTimeout(talkTimer.current);
+    if (rec.current?.state === "recording") rec.current.stop();
+  }
+
   function dismiss() {
     hush();
     setState(null);
     setReasonSent(null);
     setReplies([]);
     setWaited(0);
+    stopTalking();
+    setSpoke(null);
     fetch("/api/sos", { method: "DELETE" }).catch(() => {});
   }
 
@@ -197,6 +260,31 @@ export default function SosButton() {
                 ) : (
                   <p className="mt-6 font-700 text-sage-600">Told them. Nothing else to do.</p>
                 )}
+
+                {/* For anything the buttons do not say. Spoken, not typed. */}
+                <div className="mt-5 pt-5 border-t border-sand-200">
+                  <button
+                    onPointerDown={startTalking}
+                    onPointerUp={stopTalking}
+                    onPointerLeave={stopTalking}
+                    onPointerCancel={stopTalking}
+                    onContextMenu={(e) => e.preventDefault()}
+                    aria-label="Hold to talk to Ammi and Abu"
+                    className={`w-full rounded-2xl px-4 py-4 font-800 text-white transition select-none touch-none active:scale-[0.98] ${
+                      talking ? "bg-red-600 animate-pulse" : "bg-ink-800 hover:bg-ink-900"
+                    }`}
+                  >
+                    {talking ? "Listening… let go when done" : "Hold to talk"}
+                  </button>
+                  {spoke === "sent" && (
+                    <p className="mt-2 text-sm font-700 text-sage-600">They can hear you.</p>
+                  )}
+                  {spoke === "failed" && (
+                    <p className="mt-2 text-sm font-700 text-red-700">
+                      That didn't send. Use the buttons above, or phone them.
+                    </p>
+                  )}
+                </div>
 
                 {/* What they say back. One-way on purpose — a frightened child
                     should not be made to type. */}
