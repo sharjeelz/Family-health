@@ -108,13 +108,6 @@ export default function StudyTab() {
           </div>
         )}
 
-        {hasAny && (
-          <p className="text-xs text-ink-700/45 mt-6 leading-relaxed border-t border-sand-200 pt-3">
-            Nursery activities are expanded from the school's codes — CT (Circle
-            Time), EA (English Activity), IK (Islamic Knowledge), FT (Fun Time),
-            UA (Urdu Activity), MA (Math Activity), A&amp;C (Art &amp; Craft).
-          </p>
-        )}
       </section>
 
       )}
