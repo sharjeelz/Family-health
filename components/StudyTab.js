@@ -6,6 +6,7 @@ import Avatar from "./Avatar";
 import SchoolEvents from "./SchoolEvents";
 import SchoolCalendarTable from "./SchoolCalendarTable";
 import Syllabus from "./Syllabus";
+import Memories from "./Memories";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -112,9 +113,18 @@ export default function StudyTab() {
 
       )}
 
-      <SchoolEvents />
-      <SchoolCalendarTable />
-      {SHOW_SYLLABUS && <Syllabus />}
+      {/* Two columns on the wall display, stacked on a phone: the school's own
+          material on the left, the family's photographs beside it. */}
+      <div className="grid gap-5 wall:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] wall:items-start">
+        <div className="space-y-5 min-w-0">
+          <SchoolEvents />
+          <SchoolCalendarTable />
+          {SHOW_SYLLABUS && <Syllabus />}
+        </div>
+        <div className="min-w-0">
+          <Memories />
+        </div>
+      </div>
     </div>
   );
 }

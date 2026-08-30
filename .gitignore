@@ -14,3 +14,6 @@ certificates
 # Local development CA — belongs on your devices, not in a public repo.
 public/rootCA.crt
 certificates/
+
+# Family photographs — never in a public repo, and not in git history either.
+data/
