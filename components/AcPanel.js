@@ -43,8 +43,20 @@ export default function AcPanel() {
 
   const load = useCallback(() => {
     fetchUnits()
-      .then(setUnits)
-      .catch((e) => setError(e.message));
+      .then((next) => {
+        setError(null);
+        setUnits(next);
+      })
+      .catch((e) => {
+        setError(e.message);
+        // Keep the cards on screen and mark them offline rather than replacing
+        // them with a line of text. The room still has an air conditioner when
+        // the dashboard cannot reach it, and a card that says so — with its
+        // buttons disabled — reads better than the panel vanishing.
+        setUnits((prev) =>
+          prev ? prev.map((u) => ({ ...u, online: false, error: e.message })) : prev,
+        );
+      });
   }, []);
 
   // Refresh periodically: the units are also driven by their own remotes and
@@ -66,7 +78,10 @@ export default function AcPanel() {
     setUnits((prev) => (prev || []).map((u) => (u.id === unit.id ? { ...u, ...unit } : u)));
   }, []);
 
-  if (error) {
+  // Only when nothing has ever loaded is there nothing to show — no units are
+  // known yet, so there are no cards to disable. Once any have arrived, the
+  // failure is handled above by marking them offline.
+  if (error && !units) {
     return (
       <section className="bg-white rounded-3xl shadow-card p-5">
         <p className="text-ink-700/45 font-800 text-[0.65rem] uppercase tracking-[0.18em] mb-2">

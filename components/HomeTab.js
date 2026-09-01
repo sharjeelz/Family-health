@@ -32,13 +32,13 @@ export default function HomeTab() {
         <DaylightAndOccasion />
       </div>
 
-      {/* One card per air conditioner, with the glance panel alongside. */}
+      {/* One card per air conditioner, with the glance panel and birthdays
+          alongside. Birthdays used to span the full width below, which left it
+          alone on a second row with two empty columns beside it. */}
       <SectionTitle className="pt-1">Home &amp; family</SectionTitle>
       <div className="grid gap-5 wall:grid-cols-3 rise-in" style={step(3)}>
         <AcPanel />
-        <div className="wall:col-span-2">
-          <TodayGlance />
-        </div>
+        <TodayGlance />
         {/* Renders nothing until birthdays are filled in (lib/birthdays.js). */}
         <BirthdaysCard />
       </div>
