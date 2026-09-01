@@ -17,18 +17,37 @@ export default function Memories() {
   const [who, setWho] = useState("all");
   const [open, setOpen] = useState(null); // a photo shown full screen
 
+  // A photograph sent from the event should appear without anyone reloading
+  // the fridge. Only while this tab is open — the component is unmounted the
+  // rest of the time, so nothing polls in the background all day.
   useEffect(() => {
     let alive = true;
-    fetch("/api/memories")
-      .then((r) => r.json())
-      .then((d) => {
+
+    const load = async () => {
+      try {
+        const d = await (await fetch("/api/memories")).json();
         if (!alive) return;
         if (d.ok) setState({ status: "ready", memories: d.memories });
         else setState({ status: "error", error: d.error });
-      })
-      .catch((e) => alive && setState({ status: "error", error: e.message }));
+      } catch (e) {
+        // Keep whatever is already on screen rather than blanking it for one
+        // missed poll; only a first failure has nothing to fall back on.
+        if (alive) setState((s) => (s.status === "ready" ? s : { status: "error", error: e.message }));
+      }
+    };
+
+    load();
+    const iv = setInterval(load, 20000);
+
+    // Coming back to the tablet after sending a photo should not mean waiting
+    // out the interval.
+    const onVisible = () => document.visibilityState === "visible" && load();
+    document.addEventListener("visibilitychange", onVisible);
+
     return () => {
       alive = false;
+      clearInterval(iv);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);
 
