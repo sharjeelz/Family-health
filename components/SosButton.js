@@ -32,7 +32,7 @@ export default function SosButton() {
   const [reasonSent, setReasonSent] = useState(null);
   const [contacts, setContacts] = useState({ mom: null, dad: null });
   const [talking, setTalking] = useState(false);
-  const [spoke, setSpoke] = useState(null); // "sent" | "failed"
+  const [spoke, setSpoke] = useState(null); // "sent" | "failed" | "nomic"
   const rec = useRef(null);
   const chunks = useRef([]);
   const talkTimer = useRef(null);
@@ -172,8 +172,11 @@ export default function SosButton() {
       setTalking(true);
       talkTimer.current = setTimeout(stopTalking, MAX_TALK_MS);
     } catch {
-      // Usually no microphone permission, or a page not served over HTTPS.
-      setSpoke("failed");
+      // Refused the microphone: no permission, or a page not served over
+      // HTTPS. Reported separately from a failed send — they need entirely
+      // different fixing, and one message for both sent us hunting the wrong
+      // problem once already.
+      setSpoke("nomic");
       setTalking(false);
     }
   }
@@ -282,6 +285,12 @@ export default function SosButton() {
                   {spoke === "failed" && (
                     <p className="mt-2 text-sm font-700 text-red-700">
                       That didn't send. Use the buttons above, or phone them.
+                    </p>
+                  )}
+                  {spoke === "nomic" && (
+                    <p className="mt-2 text-sm font-700 text-red-700">
+                      This screen can't use the microphone. Use the buttons
+                      above, or phone them.
                     </p>
                   )}
                 </div>
