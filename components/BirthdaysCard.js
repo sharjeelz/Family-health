@@ -44,9 +44,13 @@ export default function BirthdaysCard() {
       {/* The date sits in the header rather than trailing the countdown: it is
           the thing you actually need to remember, and down there the balloons
           were crowding it. */}
-      <div className="flex items-center justify-between gap-2 mb-3">
+      {/* Wraps rather than clipping. The card sits in a third of the row now,
+          and the tabs plus the date do not always fit across it — unwrapped,
+          the date was pushed past the edge and cut off by the card's own
+          overflow. */}
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         {hasAnniversaries ? (
-          <div className="flex gap-1">
+          <div className="flex gap-1 min-w-0">
             {[
               { id: "birthdays", label: "Birthdays" },
               { id: "anniversaries", label: "Anniversaries" },
@@ -55,7 +59,7 @@ export default function BirthdaysCard() {
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 aria-pressed={tab === t.id}
-                className={`font-800 text-[0.6rem] uppercase tracking-[0.14em] px-2.5 py-1 rounded-full transition-colors ${
+                className={`font-800 text-[0.6rem] uppercase tracking-[0.14em] px-2.5 py-1 rounded-full whitespace-nowrap transition-colors ${
                   tab === t.id
                     ? "bg-ink-800 text-sand-50"
                     : "text-ink-700/40 hover:bg-sand-100"
@@ -71,7 +75,7 @@ export default function BirthdaysCard() {
           </p>
         )}
         <span
-          className={`font-800 text-xs px-3 py-1 rounded-full shrink-0 ${
+          className={`font-800 text-xs px-3 py-1 rounded-full shrink-0 whitespace-nowrap ${
             isToday ? "bg-sage-500 text-white" : "bg-clay-500 text-white"
           }`}
         >
